@@ -1,0 +1,12 @@
+{
+  "domain": "crisp",
+  "name": "Crisp",
+  "codeowners": [
+    "@NLthijs48"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/NLthijs48/home-assistant-crisp",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/NLthijs48/home-assistant-crisp/issues",
+  "version": "1.0.0"
+}
