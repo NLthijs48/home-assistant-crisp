@@ -6,8 +6,8 @@
   ],
   "config_flow": true,
   "documentation": "https://github.com/NLthijs48/home-assistant-crisp",
+  "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/NLthijs48/home-assistant-crisp/issues",
-  "version": "1.0.0",
-  "integration_type": "hub"
+  "version": "1.0.0"
 }
