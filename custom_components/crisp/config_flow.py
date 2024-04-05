@@ -26,7 +26,7 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self,
         info: dict | None = None,
     ) -> config_entries.FlowResult:
-        """Handle a flow initialized by the user: initial setup"""
+        """Handle a flow initialized by the user: initial setup."""
         _errors = {}
         if info is not None:
             # TODO: validate email? is there some function for that?
