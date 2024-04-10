@@ -1,4 +1,5 @@
 """Adds config flow for Blueprint."""
+
 from __future__ import annotations
 import random
 
@@ -88,11 +89,13 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         await client.async_get_data()
 
     def create_token(self) -> str:
-        """Create a new token to use for the API"""
+        """Create a new token to use for the API."""
         # This matches what the crisp app generates
 
-        tokenCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        token = '';
+        tokenCharacters = (
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        )
+        token = ""
         while len(token) < 20:
             token += tokenCharacters[random.randrange(0, len(tokenCharacters))]
-        return token;
+        return token
