@@ -1,9 +1,10 @@
 """Adds config flow for Blueprint."""
 from __future__ import annotations
+import random
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_EMAIL
+from homeassistant.const import CONF_EMAIL, CONF_TOKEN
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
@@ -37,9 +38,13 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # Ensure config flow can only be done once for this email
             self._abort_if_unique_id_configured()
 
+            # TODO: check if modification is allowed?
+            info[CONF_TOKEN] = self.create_token()
+
             try:
                 # TODO: call Crisp api to request code, handle response
                 await self._test_credentials(
+                    token=info[CONF_TOKEN],
                     email=info[CONF_EMAIL],
                 )
             except IntegrationBlueprintApiClientAuthenticationError as exception:
@@ -74,10 +79,20 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=_errors,
         )
 
-    async def _test_credentials(self, email: str) -> None:
+    async def _test_credentials(self, token: str, email: str) -> None:
         """Validate credentials."""
         client = IntegrationBlueprintApiClient(
             email=email,
             session=async_create_clientsession(self.hass),
         )
         await client.async_get_data()
+
+    def create_token(self) -> str:
+        """Create a new token to use for the API"""
+        # This matches what the crisp app generates
+
+        tokenCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        token = '';
+        while len(token) < 20:
+            token += tokenCharacters[random.randrange(0, len(tokenCharacters))]
+        return token;
