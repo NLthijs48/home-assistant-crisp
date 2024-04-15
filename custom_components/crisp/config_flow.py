@@ -15,7 +15,10 @@ from .api import (
     IntegrationBlueprintApiClientCommunicationError,
     IntegrationBlueprintApiClientError,
 )
-from .const import DOMAIN, LOGGER
+from .const import DOMAIN
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -49,13 +52,13 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     email=info[CONF_EMAIL],
                 )
             except IntegrationBlueprintApiClientAuthenticationError as exception:
-                LOGGER.warning(exception)
+                _LOGGER.warning(exception)
                 _errors["base"] = "auth"
             except IntegrationBlueprintApiClientCommunicationError as exception:
-                LOGGER.error(exception)
+                _LOGGER.error(exception)
                 _errors["base"] = "connection"
             except IntegrationBlueprintApiClientError as exception:
-                LOGGER.exception(exception)
+                _LOGGER.exception(exception)
                 _errors["base"] = "unknown"
             else:
                 return self.async_create_entry(
