@@ -6,6 +6,7 @@ import socket
 
 import aiohttp
 import async_timeout
+import random
 
 
 DEFAULT_ORIGIN = "https://crispapp.nl"
@@ -29,6 +30,20 @@ class CrispApiClientAuthenticationError(CrispApiClientError):
 # TODO: offer option to override base url? different per country
 class CrispApiClient:
     """Crisp API client."""
+
+    @staticmethod
+    def generate_client_id() -> str:
+        """Generate a new client id to use with the api.
+
+        A client id is meant as unique identifier for a device, and is meant to remain the same forever.
+        Login/logout actions will attach/detacht a user account to this client identifier.
+        """
+        # These characters and the length match what the Crisp app generates
+        character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        client_id = ""
+        while len(client_id) < 20:
+            client_id += character_set[random.randrange(0, len(character_set))]
+        return client_id
 
     def __init__(
         self,

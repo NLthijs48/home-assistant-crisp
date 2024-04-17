@@ -1,7 +1,7 @@
 """Adds config flow for Crisp."""
 
 from __future__ import annotations
-import random
+
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -37,9 +37,9 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if info is not None:
             try:
-                info[CONF_TOKEN] = self.create_token()
+                info[CONF_TOKEN] = CrispApiClient.generate_client_id()
 
-                # Request a login code for the account
+                # Request a login code for the user belonging to the email
                 response = await self.request_login_email(
                     client_id=info[CONF_TOKEN], email=info[CONF_EMAIL]
                 )
@@ -91,7 +91,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def request_login_email(self, client_id: str, email: str) -> any:
-        """Request a login code for the given Crisp account eamil."""
+        """Request a login code for the Crisp user that belongs to the given email address."""
 
         # TODO: ask for country code from the user
         client = CrispApiClient(
@@ -101,16 +101,3 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         response = await client.request_login_code(email=email, country="nl")
         _LOGGER.debug(response)
         return response
-
-    def create_token(self) -> str:
-        """Create a new token to use for the API."""
-        # This matches what the crisp app generates
-        # TODO: move into api package
-
-        tokenCharacters = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        )
-        token = ""
-        while len(token) < 20:
-            token += tokenCharacters[random.randrange(0, len(tokenCharacters))]
-        return token
