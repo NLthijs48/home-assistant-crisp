@@ -1,4 +1,4 @@
-"""Adds config flow for Blueprint."""
+"""Adds config flow for Crisp."""
 
 from __future__ import annotations
 import random
@@ -10,10 +10,10 @@ from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import (
-    IntegrationBlueprintApiClient,
-    IntegrationBlueprintApiClientAuthenticationError,
-    IntegrationBlueprintApiClientCommunicationError,
-    IntegrationBlueprintApiClientError,
+    CrispApiClient,
+    CrispApiClientAuthenticationError,
+    CrispApiClientCommunicationError,
+    CrispApiClientError,
 )
 from .const import DOMAIN
 import logging
@@ -21,7 +21,7 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Crisp."""
 
     VERSION = 1
@@ -32,40 +32,47 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         info: dict | None = None,
     ) -> config_entries.FlowResult:
         """Handle a flow initialized by the user: initial setup."""
-        _errors = {}
+        errors = {}
+        # TODO: validate email? is there some function for that?
+
         if info is not None:
-            # TODO: validate email? is there some function for that?
-
-            # TODO: switch to the Crisp userid which is more stable? Or at least make email lowercase
-            # Set unique id of this config flow to the entered email
-            await self.async_set_unique_id(info[CONF_EMAIL])
-            # Ensure config flow can only be done once for this email
-            self._abort_if_unique_id_configured()
-
-            # TODO: check if modification is allowed?
-            info[CONF_TOKEN] = self.create_token()
-
             try:
-                # TODO: call Crisp api to request code, handle response
-                await self._test_credentials(
-                    token=info[CONF_TOKEN],
-                    email=info[CONF_EMAIL],
-                )
-            except IntegrationBlueprintApiClientAuthenticationError as exception:
-                _LOGGER.warning(exception)
-                _errors["base"] = "auth"
-            except IntegrationBlueprintApiClientCommunicationError as exception:
-                _LOGGER.error(exception)
-                _errors["base"] = "connection"
-            except IntegrationBlueprintApiClientError as exception:
-                _LOGGER.exception(exception)
-                _errors["base"] = "unknown"
-            else:
-                return self.async_create_entry(
-                    title=info[CONF_EMAIL],
-                    data=info,
-                )
+                info[CONF_TOKEN] = self.create_token()
 
+                # Request a login code for the account
+                response = await self.request_login_email(
+                    client_id=info[CONF_TOKEN], email=info[CONF_EMAIL]
+                )
+            except CrispApiClientAuthenticationError as exception:
+                _LOGGER.warning(exception)
+                errors["base"] = "auth"
+            except CrispApiClientCommunicationError as exception:
+                _LOGGER.error(exception)
+                errors["base"] = "connection"
+            except CrispApiClientError as exception:
+                _LOGGER.exception(exception)
+                errors["base"] = "unknown"
+            else:
+                # Error from the api, email not found or something like that
+                if "error" in response:
+                    errors["email"] = response.error
+                elif "id" in response:
+                    # TODO: finish the flow without requesting login, use user id directly
+                    errors["base"] = "Already logged in"
+                else:
+                    # TODO: show login code form
+                    # Set unique id of this config flow to the Crisp user id
+                    # await self.async_set_unique_id(user_id)
+                    # Ensure config flow can only be done once for this email
+                    # self._abort_if_unique_id_configured()
+
+                    # All good, create config entry
+                    return self.async_create_entry(
+                        title=info[CONF_EMAIL],
+                        data=info,
+                    )
+
+        # Show errors in the form
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
@@ -80,20 +87,25 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ),
                 }
             ),
-            errors=_errors,
+            errors=errors,
         )
 
-    async def _test_credentials(self, token: str, email: str) -> None:
-        """Validate credentials."""
-        client = IntegrationBlueprintApiClient(
-            email=email,
+    async def request_login_email(self, client_id: str, email: str) -> any:
+        """Request a login code for the given Crisp account eamil."""
+
+        # TODO: ask for country code from the user
+        client = CrispApiClient(
             session=async_create_clientsession(self.hass),
+            client_id=client_id,
         )
-        await client.async_get_data()
+        response = await client.request_login_code(email=email, country="nl")
+        _LOGGER.debug(response)
+        return response
 
     def create_token(self) -> str:
         """Create a new token to use for the API."""
         # This matches what the crisp app generates
+        # TODO: move into api package
 
         tokenCharacters = (
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

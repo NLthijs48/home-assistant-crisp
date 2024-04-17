@@ -8,81 +8,88 @@ import aiohttp
 import async_timeout
 
 
-class IntegrationBlueprintApiClientError(Exception):
+DEFAULT_ORIGIN = "https://crispapp.nl"
+"""Default origin as used by the Crisp app api"""
+
+
+class CrispApiClientError(Exception):
     """Exception to indicate a general API error."""
 
 
-class IntegrationBlueprintApiClientCommunicationError(
-    IntegrationBlueprintApiClientError
-):
+class CrispApiClientCommunicationError(CrispApiClientError):
     """Exception to indicate a communication error."""
 
 
-class IntegrationBlueprintApiClientAuthenticationError(
-    IntegrationBlueprintApiClientError
-):
+# TODO: probably remove this and replace with something more specific
+class CrispApiClientAuthenticationError(CrispApiClientError):
     """Exception to indicate an authentication error."""
 
 
-class IntegrationBlueprintApiClient:
-    """Sample API Client."""
+# TODO: country enum?
+# TODO: offer option to override base url? different per country
+class CrispApiClient:
+    """Crisp API client."""
 
     def __init__(
         self,
-        email: str,
+        client_id: str,
         session: aiohttp.ClientSession,
+        origin: str = DEFAULT_ORIGIN,
     ) -> None:
-        """Sample API Client."""
-        self._email = email
+        """Crisp API Client."""
+
+        self._client_id = client_id
         self._session = session
+        self._origin = origin
+        self._headers = {
+            "Origin": origin,
+            "Content-Type": "application/json",
+            "Authorization": f"bearer {client_id}",
+            # Indicate where these requests are coming from
+            "User-Agent": "github.com/NLthijs48/home-assistant-crisp",
+            # Identify as Android release from around 2024-04
+            # - upside: ensures the api will remain compatible for a while
+            # - downside: at some point this version is phased out and blocked
+            "X-Crisp-Agent": "crisp/56eaa8fd96/app/android/519",
+        }
 
-    async def async_get_data(self) -> any:
-        """Get data from the API."""
-        return await self._api_wrapper(
-            method="get", url="https://jsonplaceholder.typicode.com/posts/1"
-        )
+    async def request_login_code(self, email: str, country: str) -> any:
+        """Request login code for the account of the given email."""
 
-    async def async_set_title(self, value: str) -> any:
-        """Get data from the API."""
         return await self._api_wrapper(
-            method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"title": value},
-            headers={"Content-type": "application/json; charset=UTF-8"},
+            method="post", path="/user/login", data={"email": email, "country": country}
         )
 
     async def _api_wrapper(
         self,
         method: str,
-        url: str,
+        path: str,
         data: dict | None = None,
-        headers: dict | None = None,
     ) -> any:
         """Get information from the API."""
         try:
             async with async_timeout.timeout(10):
                 response = await self._session.request(
                     method=method,
-                    url=url,
-                    headers=headers,
+                    url=f"{self._origin}/v1{path}",
+                    headers=self._headers,
                     json=data,
                 )
                 if response.status in (401, 403):
-                    raise IntegrationBlueprintApiClientAuthenticationError(
+                    raise CrispApiClientAuthenticationError(
                         "Invalid credentials",
                     )
                 response.raise_for_status()
                 return await response.json()
 
         except TimeoutError as exception:
-            raise IntegrationBlueprintApiClientCommunicationError(
+            raise CrispApiClientCommunicationError(
                 "Timeout error fetching information",
             ) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
-            raise IntegrationBlueprintApiClientCommunicationError(
+            print(exception)
+            raise CrispApiClientCommunicationError(
                 "Error fetching information",
             ) from exception
         except Exception as exception:  # pylint: disable=broad-except
-            raise IntegrationBlueprintApiClientError(
-                "Something really wrong happened!"
-            ) from exception
+            raise CrispApiClientError("Something really wrong happened!") from exception
