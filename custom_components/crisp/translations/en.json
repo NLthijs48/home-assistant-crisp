@@ -6,13 +6,19 @@
                 "data": {
                     "email": "Email"
                 }
+            },
+            "login": {
+                "description": "Enter the login code you received from Crisp on your email address.",
+                "data": {
+                    "code": "Login code"
+                }
             }
         },
         "abort": {
-            "already_configured": "Crisp account with that email is already configured."
+            "already_configured": "That Crisp user is already configured."
         },
         "error": {
-            "auth": "Username/Password is wrong.",
+            "auth": "Email is wrong.",
             "connection": "Unable to connect to the server.",
             "unknown": "Unknown error occurred."
         }

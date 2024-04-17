@@ -27,7 +27,6 @@ class CrispApiClientAuthenticationError(CrispApiClientError):
 
 
 # TODO: country enum?
-# TODO: offer option to override base url? different per country
 class CrispApiClient:
     """Crisp API client."""
 
@@ -73,6 +72,15 @@ class CrispApiClient:
 
         return await self._api_wrapper(
             method="post", path="/user/login", data={"email": email, "country": country}
+        )
+
+    async def login(self, email: str, country: str, login_code: str) -> any:
+        """Login a user using the login code retreived from the email sent by request_login_code."""
+
+        return await self._api_wrapper(
+            method="post",
+            path="/user/login",
+            data={"email": email, "country": country, "code": login_code},
         )
 
     async def _api_wrapper(
