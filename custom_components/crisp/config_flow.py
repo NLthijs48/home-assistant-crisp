@@ -67,12 +67,13 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 # Error from the api, email not found or something like that
                 if "error" in response:
                     errors["email"] = response.error
-                elif "id" in response:
-                    # TODO: finish the flow without requesting login, use user id directly
-                    errors["base"] = "Already logged in"
                 else:
                     # Save the email/client_id
                     self.user_info = info
+
+                    if "id" in response:
+                        # Somehow this client id is already logged in, directly continue using that user
+                        return await self.async_save_user_id(response["id"])
 
                     # Show the login code step
                     return await self.async_step_login()
@@ -126,18 +127,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     # Did not get a user id back as confirmation, something went wrong
                     errors["base"] = "Unknown error, could not login"
                 else:
-                    self.user_info["user_id"] = user_id = response["id"]
-
-                    # Set unique id of this config flow to the Crisp user id (more stable than email, which can be changed)
-                    await self.async_set_unique_id(user_id)
-                    # Ensure config flow can only be done once for this Crisp user id
-                    self._abort_if_unique_id_configured()
-
-                    # All good, create config entry
-                    return self.async_create_entry(
-                        title=self.user_info[CONF_EMAIL],
-                        data=self.user_info,
-                    )
+                    return await self.async_save_user_id(response["id"])
 
         return self.async_show_form(
             step_id="login",
@@ -154,4 +144,22 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+        )
+
+    async def async_save_user_id(
+        self, user_id: int
+    ) -> config_entries.data_entry_flow.FlowResult:
+        """Save the Crisp user id and create the config entry."""
+
+        self.user_info["user_id"] = user_id
+
+        # Set unique id of this config flow to the Crisp user id (more stable than email, which can be changed)
+        await self.async_set_unique_id(user_id)
+        # Ensure config flow can only be done once for this Crisp user id
+        self._abort_if_unique_id_configured()
+
+        # All good, create config entry
+        return self.async_create_entry(
+            title=self.user_info[CONF_EMAIL],
+            data=self.user_info,
         )
