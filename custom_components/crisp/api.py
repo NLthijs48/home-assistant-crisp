@@ -110,7 +110,6 @@ class CrispApiClient:
                 "Timeout error fetching information",
             ) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
-            print(exception)
             raise CrispApiClientCommunicationError(
                 "Error fetching information",
             ) from exception
