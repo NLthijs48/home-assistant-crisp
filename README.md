@@ -8,13 +8,17 @@
 
 _Integration to integrate with [Crisp][crisp]._
 
-**This integration will set up the following platforms.**
+## Crisp account
 
-Platform | Description
+An instance of this integration provides information about a single Crisp account into Home Assistant.
+The integration can be set up multiple times if you want to track multiple accounts.
+An account is represented as a device.
+
+## Sensors per account
+
+Name | Description
 -- | --
-`binary_sensor` | Show something `True` or `False`.
-`sensor` | Show info from blueprint API.
-`switch` | Switch something `True` or `False`.
+`Total order count` | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
 
 ## Installation
 
@@ -26,9 +30,11 @@ Platform | Description
 1. Restart Home Assistant
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Crisp"
 
-## Configuration is done in the UI
+### Configuration through the UI
 
-<!---->
+1. Enter your email address that you use for your Crisp account
+1. Enter the login code you receive on your email from Crisp
+1. Done, entities should show up with information about your account
 
 ## Contributions are welcome!
 
