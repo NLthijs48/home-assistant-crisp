@@ -21,7 +21,7 @@ from .const import DOMAIN, LOGGER
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
-class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
+class CrispDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     config_entry: ConfigEntry
@@ -37,14 +37,15 @@ class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
             hass=hass,
             logger=LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(minutes=5),
+            update_interval=timedelta(minutes=15),
         )
 
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.client.async_get_data()
+            return await self.client.get_order_count()
         except CrispApiClientAuthenticationError as exception:
+            # Authentication failed: this will start the reauth flow: SOURCE_REAUTH (async_step_reauth)
             raise ConfigEntryAuthFailed(exception) from exception
         except CrispApiClientError as exception:
             raise UpdateFailed(exception) from exception

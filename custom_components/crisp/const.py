@@ -1,4 +1,5 @@
 """Constants for crisp."""
+
 from logging import Logger, getLogger
 
 LOGGER: Logger = getLogger(__package__)
@@ -6,5 +7,7 @@ LOGGER: Logger = getLogger(__package__)
 NAME = "Crisp"
 DOMAIN = "crisp"
 VERSION = "1.0.0"
-# TODO
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
+ATTRIBUTION = "Data provided by Crisp"
+
+# Sensor entity id keys
+SENSOR_TOTAL_ORDER_COUNT = "total_order_count"

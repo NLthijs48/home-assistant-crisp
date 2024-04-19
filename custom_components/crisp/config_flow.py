@@ -29,20 +29,20 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self,
-        info: dict | None = None,
+        user_input: dict | None = None,
     ) -> config_entries.FlowResult:
         """Handle a flow initialized by the user: enter email of Crisp user."""
 
         errors: dict[str, str] = {}
-        if info is not None:
+        if user_input is not None:
             try:
                 # Generate client_id
                 client_id = CrispApiClient.generate_client_id()
-                info[CONF_TOKEN] = client_id
+                user_input[CONF_TOKEN] = client_id
 
                 # TODO: ask country from the user
                 country = "nl"
-                info[CONF_COUNTRY_CODE] = country
+                user_input[CONF_COUNTRY_CODE] = country
 
                 self.crisp_client = CrispApiClient(
                     session=async_create_clientsession(self.hass),
@@ -51,7 +51,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
                 # Request a login code for the user belonging to the email
                 response = await self.crisp_client.request_login_code(
-                    email=info[CONF_EMAIL], country=country
+                    email=user_input[CONF_EMAIL], country=country
                 )
                 _LOGGER.debug("request_login_code response: ", response)
             except CrispApiClientAuthenticationError as exception:
@@ -69,7 +69,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["email"] = response.error
                 else:
                     # Save the email/client_id
-                    self.user_info = info
+                    self.user_info = user_input
 
                     if "id" in response:
                         # Somehow this client id is already logged in, directly continue using that user
@@ -85,7 +85,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(
                         CONF_EMAIL,
-                        default=(info or {}).get(CONF_EMAIL),
+                        default=(user_input or {}).get(CONF_EMAIL),
                     ): selector.TextSelector(
                         selector.TextSelectorConfig(
                             type=selector.TextSelectorType.EMAIL
@@ -97,17 +97,17 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             last_step=False,
         )
 
-    async def async_step_login(self, info: dict | None = None):
+    async def async_step_login(self, user_input: dict | None = None):
         """Second step of the setup; enter login code for the Crisp user."""
 
         errors: dict[str, str] = {}
-        if info is not None:
+        if user_input is not None:
             try:
                 # Try to login using the provided code
                 response = await self.crisp_client.login(
                     email=self.user_info[CONF_EMAIL],
                     country=self.user_info[CONF_COUNTRY_CODE],
-                    login_code=info[CONF_CODE],
+                    login_code=user_input[CONF_CODE],
                 )
                 _LOGGER.debug("login response: ", response)
             except CrispApiClientAuthenticationError as exception:
@@ -135,7 +135,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(
                         CONF_CODE,
-                        default=(info or {}).get(CONF_CODE),
+                        default=(user_input or {}).get(CONF_CODE),
                     ): selector.TextSelector(
                         selector.TextSelectorConfig(
                             type=selector.TextSelectorType.TEXT
@@ -154,7 +154,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self.user_info["user_id"] = user_id
 
         # Set unique id of this config flow to the Crisp user id (more stable than email, which can be changed)
-        await self.async_set_unique_id(user_id)
+        await self.async_set_unique_id(str(user_id))
         # Ensure config flow can only be done once for this Crisp user id
         self._abort_if_unique_id_configured()
 

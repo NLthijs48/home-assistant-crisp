@@ -83,6 +83,11 @@ class CrispApiClient:
             data={"email": email, "country": country, "code": login_code},
         )
 
+    async def get_order_count(self) -> any:
+        """Get the total number of orders of this user."""
+
+        return await self._api_wrapper(method="get", path="/order/count")
+
     async def _api_wrapper(
         self,
         method: str,
