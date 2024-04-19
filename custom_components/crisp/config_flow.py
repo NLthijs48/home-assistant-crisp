@@ -15,10 +15,7 @@ from .api import (
     CrispApiClientCommunicationError,
     CrispApiClientError,
 )
-from .const import DOMAIN
-import logging
-
-_LOGGER = logging.getLogger(__name__)
+from .const import DOMAIN, LOGGER
 
 
 class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -53,20 +50,20 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 response = await self.crisp_client.request_login_code(
                     email=user_input[CONF_EMAIL], country=country
                 )
-                _LOGGER.debug("request_login_code response: ", response)
+                LOGGER.debug("request_login_code response: %s", response)
             except CrispApiClientAuthenticationError as exception:
-                _LOGGER.warning(exception)
+                LOGGER.warning(exception)
                 errors["base"] = "auth"
             except CrispApiClientCommunicationError as exception:
-                _LOGGER.error(exception)
+                LOGGER.error(exception)
                 errors["base"] = "connection"
             except CrispApiClientError as exception:
-                _LOGGER.exception(exception)
+                LOGGER.exception(exception)
                 errors["base"] = "unknown"
             else:
                 # Error from the api, email not found or something like that
                 if "error" in response:
-                    errors["email"] = response.error
+                    errors["email"] = response["error"]
                 else:
                     # Save the email/client_id
                     self.user_info = user_input
@@ -109,20 +106,20 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     country=self.user_info[CONF_COUNTRY_CODE],
                     login_code=user_input[CONF_CODE],
                 )
-                _LOGGER.debug("login response: ", response)
+                LOGGER.debug("login response: %s", response)
             except CrispApiClientAuthenticationError as exception:
-                _LOGGER.warning(exception)
+                LOGGER.warning(exception)
                 errors["base"] = "auth"
             except CrispApiClientCommunicationError as exception:
-                _LOGGER.error(exception)
+                LOGGER.error(exception)
                 errors["base"] = "connection"
             except CrispApiClientError as exception:
-                _LOGGER.exception(exception)
+                LOGGER.exception(exception)
                 errors["base"] = "unknown"
             else:
                 if "error" in response:
                     # These errors are not super human-readable, could attempt to map some of them to better text
-                    errors[CONF_CODE] = response.error
+                    errors[CONF_CODE] = "Could not login: " + response["error"]
                 elif "id" not in response:
                     # Did not get a user id back as confirmation, something went wrong
                     errors["base"] = "Unknown error, could not login"
