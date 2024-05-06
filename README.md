@@ -18,7 +18,8 @@ An account is represented as a device.
 
 Name | Description
 -- | --
-`Total order count` | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
+`Order count total` | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
+`Order count open` | Count of open orders in your Crisp account (out for delivery, or planned in the future).
 
 ## Installation
 
