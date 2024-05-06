@@ -32,6 +32,7 @@
                 "editor.formatOnPaste": false,
                 "editor.formatOnSave": true,
                 "editor.formatOnType": true,
+                "files.autoSave": "onFocusChange",
                 "files.trimTrailingWhitespace": true
             }
         }
