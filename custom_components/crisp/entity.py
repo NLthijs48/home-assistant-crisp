@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, NAME, ATTRIBUTION
 from .coordinator import CrispDataUpdateCoordinator
 
 
-class CrispEntity(CoordinatorEntity):
+class CrispEntity(CoordinatorEntity[CrispDataUpdateCoordinator]):
     """Crisp entity class."""
 
     _attr_has_entity_name = True
