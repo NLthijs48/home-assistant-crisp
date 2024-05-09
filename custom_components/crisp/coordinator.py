@@ -25,6 +25,7 @@ class CrispData(TypedDict):
 
     order_count_total: int
     order_count_open: int
+    next_order_product_count: None | int
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
 class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
@@ -55,13 +56,18 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             order_count_total = order_count_data['count']
             order_count_open = len(open_order_ids)
 
+            next_order_product_count = None
             if (len(open_order_ids) >= 1):
                 next_order_id = open_order_ids[0]
-                LOGGER.debug("next order id: %s", next_order_id)
+                # LOGGER.debug("next order id: %s", next_order_id)
+                next_open_order = await self.client.get_order_details(next_order_id)
+                # LOGGER.debug(json.dumps(next_open_order.keys(), indent=4))
+                next_order_product_count = len(next_open_order.get('data', {}).get('products'))
 
             result: CrispData = {
                 'order_count_total': order_count_total,
                 'order_count_open': order_count_open,
+                'next_order_product_count': next_order_product_count
             }
             return result
         except CrispApiClientAuthenticationError as exception:

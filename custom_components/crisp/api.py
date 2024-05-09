@@ -86,7 +86,15 @@ class CrispApiClient:
     async def get_order_count(self) -> any:
         """Get the total number of orders of this user."""
 
+        # Data:
+        # - count: int (all orders of the user, including cancelled, open, delivered)
+        # - openOrderIds: int[] (list of order ids that are open, paid but not delivered yet)
         return await self._api_wrapper(method="get", path="/order/count")
+
+    async def get_order_details(self, order_id: int) -> any:
+        """Get the detail of a particular order."""
+
+        return await self._api_wrapper(method="get", path=f"/order/{order_id}")
 
     async def _api_wrapper(
         self,

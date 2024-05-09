@@ -14,12 +14,18 @@ An instance of this integration provides information about a single Crisp accoun
 The integration can be set up multiple times if you want to track multiple accounts.
 An account is represented as a device.
 
-## Sensors per account
+## Account sensors
 
 Name | Description
 -- | --
 `Order count total` | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
 `Order count open` | Count of open orders in your Crisp account (out for delivery, or planned in the future).
+
+## Next order sensors
+
+Name | Description
+-- | --
+`Next order product count` | Number of products in the next order up for delivery (if there is any)
 
 ## Installation
 

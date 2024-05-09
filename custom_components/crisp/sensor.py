@@ -6,7 +6,7 @@ from collections.abc import Callable
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.helpers.typing import StateType
 
-from .const import DOMAIN, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL
+from .const import DOMAIN, SENSOR_NEXT_ORDER_PRODUCT_COUNT, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL
 from .coordinator import CrispData, CrispDataUpdateCoordinator
 from .entity import CrispEntity
 from dataclasses import dataclass
@@ -30,6 +30,12 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         name="Order count open",
         icon="mdi:receipt-clock-outline",
         get_value=lambda data: data['order_count_open'],
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_PRODUCT_COUNT,
+        name="Next order product count",
+        icon="mdi:food-croissant",
+        get_value=lambda data: data['next_order_product_count'],
     ),
 )
 
