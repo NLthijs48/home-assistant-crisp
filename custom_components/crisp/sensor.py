@@ -3,10 +3,12 @@
 from __future__ import annotations
 from collections.abc import Callable
 
+from datetime import date
+
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.helpers.typing import StateType
 
-from .const import DOMAIN, SENSOR_NEXT_ORDER_PRODUCT_COUNT, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL
+from .const import DOMAIN, SENSOR_NEXT_ORDER_PRODUCT_COUNT, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL, SENSOR_NEXT_ORDER_DELIVERY_ON
 from .coordinator import CrispData, CrispDataUpdateCoordinator
 from .entity import CrispEntity
 from dataclasses import dataclass
@@ -15,7 +17,7 @@ from dataclasses import dataclass
 class CrispSensorEntityDescription(SensorEntityDescription):
     """Describes Crisp sensor entity."""
 
-    get_value: Callable[[CrispData], StateType]
+    get_value: Callable[[CrispData], StateType | date]
 
 
 SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
@@ -36,6 +38,12 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         name="Next order product count",
         icon="mdi:food-croissant",
         get_value=lambda data: data['next_order_product_count'],
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_ON,
+        name="Next order delivery on",
+        icon="mdi:calendar",
+        get_value=lambda data: data['next_order_delivery_on'],
     ),
 )
 
@@ -64,6 +72,6 @@ class CrispSensor(CrispEntity, SensorEntity):
         self.entity_description = entity_description
 
     @property
-    def native_value(self) -> StateType:
+    def native_value(self):
         """Return the value reported by the sensor."""
         return self.entity_description.get_value(self.coordinator.data)

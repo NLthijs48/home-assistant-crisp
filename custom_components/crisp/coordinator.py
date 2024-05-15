@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import timedelta, date
 from typing import TypedDict
 
 from homeassistant.config_entries import ConfigEntry
@@ -25,7 +25,9 @@ class CrispData(TypedDict):
 
     order_count_total: int
     order_count_open: int
+    # TODO: 'next_order' dict property, nest other fields inside that?
     next_order_product_count: None | int
+    next_order_delivery_on: None | date
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
 class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
@@ -57,17 +59,24 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             order_count_open = len(open_order_ids)
 
             next_order_product_count = None
+            next_order_delivery_on = None
             if (len(open_order_ids) >= 1):
                 next_order_id = open_order_ids[0]
                 # LOGGER.debug("next order id: %s", next_order_id)
                 next_open_order = await self.client.get_order_details(next_order_id)
                 # LOGGER.debug(json.dumps(next_open_order.keys(), indent=4))
-                next_order_product_count = len(next_open_order.get('data', {}).get('products'))
+                next_open_order_data = next_open_order.get('data', {})
+
+                next_order_product_count = len(next_open_order_data.get('products'))
+
+                next_open_order_delivery_slot = next_open_order_data.get('deliverySlot', {})
+                next_order_delivery_on = date.fromisoformat(next_open_order_delivery_slot.get('date'))
 
             result: CrispData = {
                 'order_count_total': order_count_total,
                 'order_count_open': order_count_open,
-                'next_order_product_count': next_order_product_count
+                'next_order_product_count': next_order_product_count,
+                'next_order_delivery_on': next_order_delivery_on,
             }
             return result
         except CrispApiClientAuthenticationError as exception:
