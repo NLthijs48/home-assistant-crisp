@@ -23,9 +23,12 @@ Name | Description
 
 ## Next order sensors
 
+If there are orders planned for delivery, the following sensors are available for the order that is closest to delivery.
+
 Name | Description
 -- | --
-`Next order product count` | Number of products in the next order up for delivery (if there is any)
+`Next order delivery on` | Delivery date
+`Next order product count` | Number of order lines (count of different products, not a sum of counts)
 
 ## Installation
 
