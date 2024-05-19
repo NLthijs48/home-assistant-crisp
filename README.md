@@ -16,19 +16,23 @@ An account is represented as a device.
 
 ## Account sensors
 
-Name | Description
--- | --
-`Order count total` | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
-`Order count open` | Count of open orders in your Crisp account (out for delivery, or planned in the future).
+Name | Type | Description
+-- | -- | --
+`Order count total` | int | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
+`Order count open` | int | Count of open orders in your Crisp account (out for delivery, or planned in the future).
 
 ## Next order sensors
 
 If there are orders planned for delivery, the following sensors are available for the order that is closest to delivery.
 
-Name | Description
--- | --
-`Next order delivery on` | Delivery date
-`Next order product count` | Number of order lines (count of different products, not a sum of counts)
+Name | Type | Description
+-- | -- | --
+`Next order delivery on` | date | Delivery date
+`Next order delivery start` | datetime | Start of the delivery window (as selected by the user)
+`Next order delivery start time` | time | Start time of the delivery window (as selected by the user)
+`Next order delivery end` | datetime | End of the delivery window (as selected by the user)
+`Next order delivery end time` | time | End time of the delivery window (as selected by the user)
+`Next order product count` | int | Number of order lines (count of different products, not a sum of counts)
 
 ## Installation
 

@@ -8,7 +8,7 @@ from datetime import date
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.helpers.typing import StateType
 
-from .const import DOMAIN, SENSOR_NEXT_ORDER_PRODUCT_COUNT, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL, SENSOR_NEXT_ORDER_DELIVERY_ON
+from .const import DOMAIN, SENSOR_NEXT_ORDER_DELIVERY_END, SENSOR_NEXT_ORDER_DELIVERY_END_TIME, SENSOR_NEXT_ORDER_DELIVERY_START, SENSOR_NEXT_ORDER_DELIVERY_START_TIME, SENSOR_NEXT_ORDER_PRODUCT_COUNT, SENSOR_ORDER_COUNT_OPEN, SENSOR_ORDER_COUNT_TOTAL, SENSOR_NEXT_ORDER_DELIVERY_ON
 from .coordinator import CrispData, CrispDataUpdateCoordinator
 from .entity import CrispEntity
 from dataclasses import dataclass
@@ -44,6 +44,30 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         name="Next order delivery on",
         icon="mdi:calendar",
         get_value=lambda data: data['next_order'].get('delivery_on'),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_START,
+        name="Next order delivery start",
+        icon="mdi:clock-start",
+        get_value=lambda data: data['next_order'].get('delivery_start'),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_START_TIME,
+        name="Next order delivery start time",
+        icon="mdi:clock-start",
+        get_value=lambda data: data['next_order'].get('delivery_start_time'),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_END,
+        name="Next order delivery end",
+        icon="mdi:clock-end",
+        get_value=lambda data: data['next_order'].get('delivery_end'),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_END_TIME,
+        name="Next order delivery end time",
+        icon="mdi:clock-end",
+        get_value=lambda data: data['next_order'].get('delivery_end_time'),
     ),
 )
 

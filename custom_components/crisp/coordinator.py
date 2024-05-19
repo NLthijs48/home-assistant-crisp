@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime, time
 from typing import TypedDict
 
 from homeassistant.config_entries import ConfigEntry
@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.util import dt as dt_util
 
 from .api import (
     CrispApiClient,
@@ -32,7 +33,14 @@ class CrispUpcomingOrderData(TypedDict):
 
     id: int
     product_count: int
-    delivery_on: date
+    # None for the case it cannot get parsed
+    delivery_on: None | date
+    # None for the case it cannot get parsed
+    delivery_start: None | datetime
+    delivery_start_time: None | time
+    # None for the case it cannot get parsed
+    delivery_end: None | datetime
+    delivery_end_time: None | time
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
 class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
@@ -66,20 +74,35 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             next_order: None | CrispUpcomingOrderData = None
             if (len(open_order_ids) >= 1):
                 next_order_id = open_order_ids[0]
-                # LOGGER.debug("next order id: %s", next_order_id)
                 next_open_order = await self.client.get_order_details(next_order_id)
-                # LOGGER.debug(json.dumps(next_open_order.keys(), indent=4))
                 next_open_order_data = next_open_order.get('data', {})
 
                 product_count = len(next_open_order_data.get('products'))
 
                 delivery_slot = next_open_order_data.get('deliverySlot', {})
-                delivery_on = date.fromisoformat(delivery_slot.get('date'))
+
+                delivery_on_raw = delivery_slot.get('date')
+                delivery_on = dt_util.parse_date(delivery_on_raw) if delivery_on_raw is not None else None
+
+                # Is it best practice to store in UTC or using as_local in the state?
+                delivery_start_raw = delivery_slot.get('tsStart')
+                delivery_start = dt_util.as_local(dt_util.parse_datetime(delivery_start_raw)) if delivery_start_raw is not None else None
+                delivery_start_time_raw = delivery_slot.get('start')
+                delivery_start_time = dt_util.parse_time(delivery_start_time_raw) if delivery_start_time_raw is not None else None
+
+                delivery_end_raw = delivery_slot.get('tsEnd')
+                delivery_end = dt_util.as_local(dt_util.parse_datetime(delivery_end_raw)) if delivery_end_raw is not None else None
+                delivery_end_time_raw = delivery_slot.get('end')
+                delivery_end_time = dt_util.parse_time(delivery_end_time_raw) if delivery_end_time_raw is not None else None
 
                 next_order = {
                     'id': next_order_id,
                     'product_count': product_count,
                     'delivery_on': delivery_on,
+                    'delivery_start': delivery_start,
+                    'delivery_start_time': delivery_start_time,
+                    'delivery_end': delivery_end,
+                    'delivery_end_time': delivery_end_time
                 }
 
             result: CrispData = {
