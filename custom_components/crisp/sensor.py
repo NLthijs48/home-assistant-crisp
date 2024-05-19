@@ -37,13 +37,13 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         key=SENSOR_NEXT_ORDER_PRODUCT_COUNT,
         name="Next order product count",
         icon="mdi:food-croissant",
-        get_value=lambda data: data['next_order_product_count'],
+        get_value=lambda data: data['next_order'].get('product_count'),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_ON,
         name="Next order delivery on",
         icon="mdi:calendar",
-        get_value=lambda data: data['next_order_delivery_on'],
+        get_value=lambda data: data['next_order'].get('delivery_on'),
     ),
 )
 

@@ -25,9 +25,14 @@ class CrispData(TypedDict):
 
     order_count_total: int
     order_count_open: int
-    # TODO: 'next_order' dict property, nest other fields inside that?
-    next_order_product_count: None | int
-    next_order_delivery_on: None | date
+    next_order: None | CrispUpcomingOrderData
+
+class CrispUpcomingOrderData(TypedDict):
+    """Stores data describing an upcoming order."""
+
+    id: int
+    product_count: int
+    delivery_on: date
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
 class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
@@ -58,8 +63,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             order_count_total = order_count_data['count']
             order_count_open = len(open_order_ids)
 
-            next_order_product_count = None
-            next_order_delivery_on = None
+            next_order: None | CrispUpcomingOrderData = None
             if (len(open_order_ids) >= 1):
                 next_order_id = open_order_ids[0]
                 # LOGGER.debug("next order id: %s", next_order_id)
@@ -67,16 +71,21 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                 # LOGGER.debug(json.dumps(next_open_order.keys(), indent=4))
                 next_open_order_data = next_open_order.get('data', {})
 
-                next_order_product_count = len(next_open_order_data.get('products'))
+                product_count = len(next_open_order_data.get('products'))
 
-                next_open_order_delivery_slot = next_open_order_data.get('deliverySlot', {})
-                next_order_delivery_on = date.fromisoformat(next_open_order_delivery_slot.get('date'))
+                delivery_slot = next_open_order_data.get('deliverySlot', {})
+                delivery_on = date.fromisoformat(delivery_slot.get('date'))
+
+                next_order = {
+                    'id': next_order_id,
+                    'product_count': product_count,
+                    'delivery_on': delivery_on,
+                }
 
             result: CrispData = {
                 'order_count_total': order_count_total,
                 'order_count_open': order_count_open,
-                'next_order_product_count': next_order_product_count,
-                'next_order_delivery_on': next_order_delivery_on,
+                'next_order': next_order
             }
             return result
         except CrispApiClientAuthenticationError as exception:
