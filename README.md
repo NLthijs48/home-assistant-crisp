@@ -34,23 +34,39 @@ Name | Type | Description
 `Next order delivery end time` | time | End time of the delivery window (as selected by the user)
 `Next order product count` | int | Number of order lines (count of different products, not a sum of counts)
 
-## Installation
+## Installation using HACS
 
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-1. If you do not have a `custom_components` directory (folder) there, you need to create it.
-1. In the `custom_components` directory (folder) create a new folder called `crisp`.
-1. Download _all_ the files from the `custom_components/crisp/` directory (folder) in this repository.
-1. Place the files you downloaded in the new directory (folder) you created.
-1. Restart Home Assistant
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Crisp"
+1. Open the HACS dashboard
+2. Add this repository:
+    1. Open the menu located in the top-right (the 3 dots)
+    1. Select `Custom repositories`
+    1. `Repository`: enter `https://github.com/NLthijs48/home-assistant-crisp`
+    1. `Category`:  select `Integration`
+    1. Click `Add`
+    1. Close the popup
+3. Search for `Crisp`, or click here:
+
+[![Open your Home Assistant instance and open the Crisp repository inside the Home Assistant Community Store](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=NLthijs48&repository=home-assistant-crisp&category=integration)
+
+4. Click the `Download` button in the bottom right corner
+5. Confirm by clicking `Download`
+6. Restart Home Assistant
+
+## Set up the integration
+
+1. In the HA UI go to `Configuration` > `Integrations` click `+` and search for `Crisp`, or click here:
 
 [![Open your Home Assistant instance and start setting up the Crisp integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=crisp) 
 
-### Configuration through the UI
+2. Enter your email address that you use for your Crisp account
+3. Enter the login code you receive on your email from Crisp
+4. Done, entities should show up with information about your account
 
-1. Enter your email address that you use for your Crisp account
-1. Enter the login code you receive on your email from Crisp
-1. Done, entities should show up with information about your account
+[![Open your Home Assistant instance and show the Crisp](https://my.home-assistant.io/badges/integration.svg)](https://my.home-assistant.io/redirect/integration/?domain=crisp)
+
+## Manual installation
+
+Copy all files from `custom_component/crisp/` to your HA installation, restart HA, configure the integration
 
 ## Contributions are welcome!
 
