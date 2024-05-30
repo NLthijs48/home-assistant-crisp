@@ -44,6 +44,8 @@ Name | Type | Description
 1. Restart Home Assistant
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Crisp"
 
+[![Open your Home Assistant instance and start setting up the Crisp integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=crisp) 
+
 ### Configuration through the UI
 
 1. Enter your email address that you use for your Crisp account
