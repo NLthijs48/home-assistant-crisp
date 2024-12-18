@@ -9,5 +9,5 @@
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/NLthijs48/home-assistant-crisp/issues",
-  "version": "1.1.0"
+  "version": "1.2.0"
 }
