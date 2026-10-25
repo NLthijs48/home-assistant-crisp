@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_EMAIL, CONF_TOKEN, CONF_CODE, CONF_COUNTRY_CODE
+from homeassistant.const import CONF_CODE, CONF_COUNTRY_CODE, CONF_EMAIL, CONF_TOKEN
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
@@ -29,7 +28,6 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         user_input: dict | None = None,
     ) -> config_entries.FlowResult:
         """Handle a flow initialized by the user: enter email of Crisp user."""
-
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
@@ -96,7 +94,6 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_login(self, user_input: dict | None = None):
         """Second step of the setup; enter login code for the Crisp user."""
-
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
@@ -147,7 +144,6 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_id: int
     ) -> config_entries.data_entry_flow.FlowResult:
         """Save the Crisp user id and create the config entry."""
-
         self.user_info["user_id"] = user_id
 
         # Set unique id of this config flow to the Crisp user id (more stable than email, which can be changed)

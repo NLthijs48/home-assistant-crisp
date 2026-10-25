@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
+import random
 import socket
 
 import aiohttp
 import async_timeout
-import random
-
 
 DEFAULT_ORIGIN = "https://crispapp.nl"
 """Default origin as used by the Crisp app api"""
@@ -32,7 +31,8 @@ class CrispApiClient:
 
     @staticmethod
     def generate_client_id() -> str:
-        """Generate a new client id to use with the api.
+        """
+        Generate a new client id to use with the api.
 
         A client id is meant as unique identifier for a device, and is meant to remain the same forever.
         Login/logout actions will attach/detacht a user account to this client identifier.
@@ -51,7 +51,6 @@ class CrispApiClient:
         origin: str = DEFAULT_ORIGIN,
     ) -> None:
         """Crisp API Client."""
-
         self._client_id = client_id
         self._session = session
         self._origin = origin
@@ -69,14 +68,12 @@ class CrispApiClient:
 
     async def request_login_code(self, email: str, country: str) -> any:
         """Request login code for the account of the given email."""
-
         return await self._api_wrapper(
             method="post", path="/user/login", data={"email": email, "country": country}
         )
 
     async def login(self, email: str, country: str, login_code: str) -> any:
         """Login a user using the login code retreived from the email sent by request_login_code."""
-
         return await self._api_wrapper(
             method="post",
             path="/user/login",
@@ -85,7 +82,6 @@ class CrispApiClient:
 
     async def get_order_count(self) -> any:
         """Get the total number of orders of this user."""
-
         # Data:
         # - count: int (all orders of the user, including cancelled, open, delivered)
         # - openOrderIds: int[] (list of order ids that are open, paid but not delivered yet)
@@ -93,7 +89,6 @@ class CrispApiClient:
 
     async def get_order_details(self, order_id: int) -> any:
         """Get the detail of a particular order."""
-
         return await self._api_wrapper(method="get", path=f"/order/{order_id}")
 
     async def _api_wrapper(
