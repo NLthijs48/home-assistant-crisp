@@ -11,6 +11,19 @@ ignore = [
     "D212",    # multi-line-summary-first-line (incompatible with formatter)
     "COM812",  # incompatible with formatter
     "ISC001",  # incompatible with formatter
+    "EXE002",  # executable bit set by dev environment, cannot be changed here
+    "TD002",   # TODO author
+    "TD003",   # TODO issue link
+    "FIX002",  # TODO comments
+    "TRY003",  # long exception messages
+    "TRY300",  # return in try
+    "TRY301",  # raise within try
+    "EM101",   # string literal in exception
+    "PLR2004", # magic values
+    "S311",
+    "TC001",   # follow Home Assistant style: no TYPE_CHECKING blocks
+    "TC002",
+    "TC003",    # random used for non-crypto client id
 ]
 
 [lint.flake8-pytest-style]

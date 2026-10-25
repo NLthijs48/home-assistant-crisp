@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from datetime import date, time
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
 from .const import (
@@ -95,7 +98,11 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
 )
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_devices: AddEntitiesCallback,
+) -> None:
     """Set up the sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
@@ -125,6 +132,6 @@ class CrispSensor(CrispEntity, SensorEntity):
         self.entity_description = entity_description
 
     @property
-    def native_value(self):
+    def native_value(self) -> StateType | date | time:
         """Return the value reported by the sensor."""
         return self.entity_description.get_value(self.coordinator.data)

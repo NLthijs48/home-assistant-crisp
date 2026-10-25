@@ -65,7 +65,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             update_interval=timedelta(minutes=15),
         )
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> CrispData:
         """Update data via library."""
         try:
             order_count_data = await self.client.get_order_count()
@@ -135,7 +135,8 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             }
             return result
         except CrispApiClientAuthenticationError as exception:
-            # Authentication failed: this will start the reauth flow: SOURCE_REAUTH (async_step_reauth)
+            # Authentication failed: this will start the reauth flow:
+            # (see async_step_reauth)
             raise ConfigEntryAuthFailed(exception) from exception
         except CrispApiClientError as exception:
             raise UpdateFailed(exception) from exception
