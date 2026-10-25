@@ -34,8 +34,10 @@ class CrispApiClient:
         """
         Generate a new client id to use with the api.
 
-        A client id is meant as unique identifier for a device, and is meant to remain the same forever.
-        Login/logout actions will attach/detacht a user account to this client identifier.
+        A client id is meant as unique identifier for a device, and is meant to
+        remain the same forever.
+        Login/logout actions will attach/detach a user account to this client
+        identifier.
         """
         # These characters and the length match what the Crisp app generates
         character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -73,7 +75,11 @@ class CrispApiClient:
         )
 
     async def login(self, email: str, country: str, login_code: str) -> any:
-        """Login a user using the login code retreived from the email sent by request_login_code."""
+        """
+        Login a user using the login code retrieved from the email.
+
+        The code is sent by request_login_code.
+        """
         return await self._api_wrapper(
             method="post",
             path="/user/login",
@@ -84,7 +90,8 @@ class CrispApiClient:
         """Get the total number of orders of this user."""
         # Data:
         # - count: int (all orders of the user, including cancelled, open, delivered)
-        # - openOrderIds: int[] (list of order ids that are open, paid but not delivered yet)
+        # - openOrderIds: int[] (list of order ids that are open, paid but not
+        #   delivered yet)
         return await self._api_wrapper(method="get", path="/order/count")
 
     async def get_order_details(self, order_id: int) -> any:
