@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_CODE, CONF_COUNTRY_CODE, CONF_EMAIL, CONF_TOKEN
@@ -108,6 +111,70 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             last_step=False,
         )
 
+    async def async_step_reauth(
+        self,
+        entry_data: Mapping[str, Any],  # noqa: ARG002
+    ) -> config_entries.ConfigFlowResult:
+        """Start the reauth flow when the Crisp session is no longer valid."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Request a new login code for the existing account."""
+        entry = self._get_reauth_entry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                # Keep the existing client id and country, only the email can change
+                self.user_info = {**entry.data, CONF_EMAIL: user_input[CONF_EMAIL]}
+                self.crisp_client = CrispApiClient(
+                    session=async_create_clientsession(self.hass),
+                    client_id=entry.data[CONF_TOKEN],
+                )
+                response = await self.crisp_client.request_login_code(
+                    email=self.user_info[CONF_EMAIL],
+                    country=self.user_info[CONF_COUNTRY_CODE],
+                )
+            except CrispApiClientAuthenticationError as exception:
+                LOGGER.warning(exception)
+                errors["base"] = "auth"
+            except CrispApiClientCommunicationError as exception:
+                LOGGER.error(exception)
+                errors["base"] = "connection"
+            except CrispApiClientError as exception:
+                LOGGER.exception(exception)
+                errors["base"] = "unknown"
+            else:
+                if "error" in response:
+                    errors["base"] = "auth"
+                elif "id" in response:
+                    return await self.async_save_user_id(response["id"])
+                else:
+                    return await self.async_step_login()
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_EMAIL,
+                        default=(user_input or {}).get(
+                            CONF_EMAIL, entry.data[CONF_EMAIL]
+                        ),
+                    ): selector.TextSelector(
+                        selector.TextSelectorConfig(
+                            type=selector.TextSelectorType.EMAIL
+                        ),
+                    ),
+                }
+            ),
+            description_placeholders={
+                "country": CrispCountry(entry.data[CONF_COUNTRY_CODE]).display_name
+            },
+            errors=errors,
+        )
+
     async def async_step_login(
         self, user_input: dict | None = None
     ) -> config_entries.ConfigFlowResult:
@@ -164,6 +231,13 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.data_entry_flow.FlowResult:
         """Save the Crisp user id and create the config entry."""
         self.user_info["user_id"] = user_id
+
+        if self.source == config_entries.SOURCE_REAUTH:
+            await self.async_set_unique_id(str(user_id))
+            self._abort_if_unique_id_mismatch()
+            return self.async_update_reload_and_abort(
+                self._get_reauth_entry(), data_updates=self.user_info
+            )
 
         # Set unique id of this config flow to the Crisp user id (more stable than
         # email, which can be changed)

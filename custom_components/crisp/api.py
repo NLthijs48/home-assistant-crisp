@@ -135,6 +135,9 @@ class CrispApiClient:
                 response.raise_for_status()
                 return await response.json()
 
+        except CrispApiClientError:
+            # Already a specific error (e.g. authentication), don't wrap it again
+            raise
         except TimeoutError as exception:
             raise CrispApiClientCommunicationError(
                 "Timeout error fetching information",

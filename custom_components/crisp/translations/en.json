@@ -13,10 +13,19 @@
                 "data": {
                     "code": "Login code"
                 }
+            },
+            "reauth_confirm": {
+                "title": "Reauthenticate",
+                "description": "Your Crisp account logged out, update or confirm your email to receive a new login code. Country: {country} (cannot be changed)",
+                "data": {
+                    "email": "Email"
+                }
             }
         },
         "abort": {
-            "already_configured": "That Crisp user is already configured."
+            "already_configured": "That Crisp account is already configured.",
+            "reauth_successful": "Reauthentication was successful.",
+            "unique_id_mismatch": "That login belongs to a different Crisp account, add a new integration entry to set it up."
         },
         "error": {
             "auth": "Email is wrong.",
