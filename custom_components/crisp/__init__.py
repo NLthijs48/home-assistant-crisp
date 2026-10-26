@@ -10,6 +10,7 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import CrispApiClient
@@ -36,9 +37,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    _remove_stale_devices(hass, entry)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
+
+
+def _remove_stale_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Remove devices of this entry that don't match the current identifier.
+
+    Older versions registered the device with identifier (DOMAIN, None).
+    """
+    registry = dr.async_get(hass)
+    current = (DOMAIN, entry.unique_id)
+    for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
+        if current not in device.identifiers:
+            registry.async_remove_device(device.id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
