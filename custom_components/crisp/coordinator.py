@@ -27,7 +27,7 @@ class CrispData(TypedDict):
 
     order_count_total: int
     order_count_open: int
-    next_order: None | CrispUpcomingOrderData
+    next_order: CrispUpcomingOrderData | None
 
 
 class CrispUpcomingOrderData(TypedDict):
@@ -36,13 +36,13 @@ class CrispUpcomingOrderData(TypedDict):
     id: int
     product_count: int
     # None for the case it cannot get parsed
-    delivery_on: None | date
+    delivery_on: date | None
     # None for the case it cannot get parsed
-    delivery_start: None | datetime
-    delivery_start_time: None | time
+    delivery_start: datetime | None
+    delivery_start_time: time | None
     # None for the case it cannot get parsed
-    delivery_end: None | datetime
-    delivery_end_time: None | time
+    delivery_end: datetime | None
+    delivery_end_time: time | None
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
@@ -74,7 +74,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             order_count_total = order_count_data["count"]
             order_count_open = len(open_order_ids)
 
-            next_order: None | CrispUpcomingOrderData = None
+            next_order: CrispUpcomingOrderData | None = None
             if len(open_order_ids) >= 1:
                 next_order_id = open_order_ids[0]
                 next_open_order = await self.client.get_order_details(next_order_id)

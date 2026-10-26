@@ -51,49 +51,61 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         key=SENSOR_NEXT_ORDER_PRODUCT_COUNT,
         name="Next order product count",
         icon="mdi:food-croissant",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("product_count"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("product_count")
+        ),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_ON,
         name="Next order delivery on",
         icon="mdi:calendar",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("delivery_on"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_on")
+        ),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_START,
         name="Next order delivery start",
         icon="mdi:clock-start",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("delivery_start"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_start")
+        ),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_START_TIME,
         name="Next order delivery start time",
         icon="mdi:clock-start",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("delivery_start_time"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_start_time")
+        ),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_END,
         name="Next order delivery end",
         icon="mdi:clock-end",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("delivery_end"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_end")
+        ),
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_END_TIME,
         name="Next order delivery end time",
         icon="mdi:clock-end",
-        get_value=lambda data: None
-        if data["next_order"] is None
-        else data["next_order"].get("delivery_end_time"),
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_end_time")
+        ),
     ),
 )
 
