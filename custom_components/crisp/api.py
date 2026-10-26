@@ -40,6 +40,14 @@ class CrispCountry(StrEnum):
             CrispCountry.BELGIUM: "Belgium",
         }[self]
 
+    @property
+    def configuration_url(self) -> str:
+        """URL of the Crisp web app for this country."""
+        return {
+            CrispCountry.NETHERLANDS: "https://crisp.nl/app",
+            CrispCountry.BELGIUM: "https://crisp.app/app",
+        }[self]
+
 
 class CrispApiClient:
     """Crisp API client."""

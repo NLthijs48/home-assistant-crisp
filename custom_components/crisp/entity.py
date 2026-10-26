@@ -6,6 +6,7 @@ from homeassistant.const import CONF_COUNTRY_CODE
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .api import CrispCountry
 from .const import ATTRIBUTION, DOMAIN, NAME
 from .coordinator import CrispDataUpdateCoordinator
 
@@ -20,15 +21,11 @@ class CrispEntity(CoordinatorEntity[CrispDataUpdateCoordinator]):
         """Initialize."""
         super().__init__(coordinator)
 
-        country = coordinator.config_entry.data[CONF_COUNTRY_CODE]
-        configuration_url = {
-            "nl": "https://crisp.nl/app",
-            "be": "https://crisp.app/app",
-        }.get(country)
+        country = CrispCountry(coordinator.config_entry.data[CONF_COUNTRY_CODE])
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.unique_id)},
             name=NAME,
             manufacturer=NAME,
-            configuration_url=configuration_url,
+            configuration_url=country.configuration_url,
         )
