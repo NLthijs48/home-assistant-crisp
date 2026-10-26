@@ -2,8 +2,9 @@
     "config": {
         "step": {
             "user": {
-                "description": "Enter your email adress used for your Crisp account.",
+                "description": "Enter your country and email address used for your Crisp account.",
                 "data": {
+                    "country_code": "Country",
                     "email": "Email"
                 }
             },

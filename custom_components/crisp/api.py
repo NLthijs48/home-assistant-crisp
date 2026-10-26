@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 import socket
+from enum import StrEnum
 
 import aiohttp
 import async_timeout
@@ -25,7 +26,21 @@ class CrispApiClientAuthenticationError(CrispApiClientError):
     """Exception to indicate an authentication error."""
 
 
-# TODO: country enum?
+class CrispCountry(StrEnum):
+    """Countries supported by the Crisp api."""
+
+    NETHERLANDS = "nl"
+    BELGIUM = "be"
+
+    @property
+    def display_name(self) -> str:
+        """Human readable name of the country."""
+        return {
+            CrispCountry.NETHERLANDS: "The Netherlands",
+            CrispCountry.BELGIUM: "Belgium",
+        }[self]
+
+
 class CrispApiClient:
     """Crisp API client."""
 

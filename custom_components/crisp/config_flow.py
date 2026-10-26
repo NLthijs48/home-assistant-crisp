@@ -13,6 +13,7 @@ from .api import (
     CrispApiClientAuthenticationError,
     CrispApiClientCommunicationError,
     CrispApiClientError,
+    CrispCountry,
 )
 from .const import DOMAIN, LOGGER
 
@@ -35,9 +36,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client_id = CrispApiClient.generate_client_id()
                 user_input[CONF_TOKEN] = client_id
 
-                # TODO: ask country from the user
-                country = "nl"
-                user_input[CONF_COUNTRY_CODE] = country
+                country = user_input[CONF_COUNTRY_CODE]
 
                 self.crisp_client = CrispApiClient(
                     session=async_create_clientsession(self.hass),
@@ -79,6 +78,22 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
+                    vol.Required(
+                        CONF_COUNTRY_CODE,
+                        default=(user_input or {}).get(
+                            CONF_COUNTRY_CODE, CrispCountry.NETHERLANDS.value
+                        ),
+                    ): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=[
+                                selector.SelectOptionDict(
+                                    value=c.value, label=c.display_name
+                                )
+                                for c in CrispCountry
+                            ],
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                        ),
+                    ),
                     vol.Required(
                         CONF_EMAIL,
                         default=(user_input or {}).get(CONF_EMAIL),
@@ -158,6 +173,9 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # All good, create config entry
         return self.async_create_entry(
-            title=self.user_info[CONF_EMAIL],
+            title=(
+                f"{self.user_info[CONF_EMAIL]} "
+                f"({CrispCountry(self.user_info[CONF_COUNTRY_CODE]).display_name})"
+            ),
             data=self.user_info,
         )
