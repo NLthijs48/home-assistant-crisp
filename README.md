@@ -72,6 +72,12 @@ Copy all files from `custom_component/crisp/` to your HA installation, restart H
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
 
+## Trademark Legal Notices
+
+All product names, trademarks and registered trademarks in the images in this
+repository, are property of their respective owners. All images in this
+repository are used for identification purposes only.
+
 ***
 
 [crisp]: https://crisp.nl
