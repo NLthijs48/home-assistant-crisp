@@ -44,7 +44,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 def _remove_stale_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Remove devices of this entry that don't match the current identifier.
+    """
+    Remove devices of this entry that don't match the current identifier.
 
     Older versions registered the device with identifier (DOMAIN, None).
     """
