@@ -85,10 +85,10 @@ class CrispApiClient:
             "Authorization": f"bearer {client_id}",
             # Indicate where these requests are coming from
             "User-Agent": "github.com/NLthijs48/home-assistant-crisp",
-            # Identify as Android release from around 2024-04
+            # Identify as Android release from around 2026-10
             # - upside: ensures the api will remain compatible for a while
             # - downside: at some point this version is phased out and blocked
-            "X-Crisp-Agent": "crisp/56eaa8fd96/app/android/519",
+            "X-Crisp-Agent": "crisp/app/android/667",
         }
 
     async def request_login_code(self, email: str, country: str) -> any:
