@@ -6,7 +6,6 @@ LOGGER: Logger = getLogger(__package__)
 
 NAME = "Crisp"
 DOMAIN = "crisp"
-VERSION = "1.0.0"
 ATTRIBUTION = "Data provided by Crisp"
 
 # Sensor entity id keys
