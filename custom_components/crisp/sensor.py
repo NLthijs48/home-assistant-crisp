@@ -7,13 +7,12 @@ from dataclasses import dataclass
 from datetime import date, time
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
+from . import CrispConfigEntry
 from .const import (
-    DOMAIN,
     SENSOR_NEXT_ORDER_DELIVERY_END,
     SENSOR_NEXT_ORDER_DELIVERY_END_TIME,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
@@ -112,11 +111,11 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: CrispConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
     async_add_devices(
         [
             CrispSensor(
