@@ -1,2 +1,4 @@
 -r requirements_common.txt
 colorlog==6.12.0
+zlib-ng
+isal
