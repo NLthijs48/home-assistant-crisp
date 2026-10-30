@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 from typing import TypedDict
 
 from homeassistant.config_entries import ConfigEntry
@@ -39,10 +39,8 @@ class CrispUpcomingOrderData(TypedDict):
     delivery_on: date | None
     # None for the case it cannot get parsed
     delivery_start: datetime | None
-    delivery_start_time: time | None
     # None for the case it cannot get parsed
     delivery_end: datetime | None
-    delivery_end_time: time | None
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
@@ -98,23 +96,11 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                     if delivery_start_raw is not None
                     else None
                 )
-                delivery_start_time_raw = delivery_slot.get("start")
-                delivery_start_time = (
-                    dt_util.parse_time(delivery_start_time_raw)
-                    if delivery_start_time_raw is not None
-                    else None
-                )
 
                 delivery_end_raw = delivery_slot.get("tsEnd")
                 delivery_end = (
                     dt_util.as_local(dt_util.parse_datetime(delivery_end_raw))
                     if delivery_end_raw is not None
-                    else None
-                )
-                delivery_end_time_raw = delivery_slot.get("end")
-                delivery_end_time = (
-                    dt_util.parse_time(delivery_end_time_raw)
-                    if delivery_end_time_raw is not None
                     else None
                 )
 
@@ -123,9 +109,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                     "product_count": product_count,
                     "delivery_on": delivery_on,
                     "delivery_start": delivery_start,
-                    "delivery_start_time": delivery_start_time,
                     "delivery_end": delivery_end,
-                    "delivery_end_time": delivery_end_time,
                 }
 
             result: CrispData = {

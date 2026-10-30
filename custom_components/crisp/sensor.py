@@ -4,9 +4,13 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date, time
+from datetime import date, datetime
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
@@ -14,10 +18,8 @@ from homeassistant.helpers.typing import StateType
 from . import CrispConfigEntry
 from .const import (
     SENSOR_NEXT_ORDER_DELIVERY_END,
-    SENSOR_NEXT_ORDER_DELIVERY_END_TIME,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
-    SENSOR_NEXT_ORDER_DELIVERY_START_TIME,
     SENSOR_NEXT_ORDER_PRODUCT_COUNT,
     SENSOR_ORDER_COUNT_OPEN,
     SENSOR_ORDER_COUNT_TOTAL,
@@ -30,7 +32,7 @@ from .entity import CrispEntity
 class CrispSensorEntityDescription(SensorEntityDescription):
     """Describes Crisp sensor entity."""
 
-    get_value: Callable[[CrispData], StateType | date | time]
+    get_value: Callable[[CrispData], StateType | date | datetime]
 
 
 SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
@@ -60,6 +62,7 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         key=SENSOR_NEXT_ORDER_DELIVERY_ON,
         name="Next order delivery on",
         icon="mdi:calendar",
+        device_class=SensorDeviceClass.DATE,
         get_value=lambda data: (
             None
             if data["next_order"] is None
@@ -70,6 +73,7 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         key=SENSOR_NEXT_ORDER_DELIVERY_START,
         name="Next order delivery start",
         icon="mdi:clock-start",
+        device_class=SensorDeviceClass.TIMESTAMP,
         get_value=lambda data: (
             None
             if data["next_order"] is None
@@ -77,40 +81,21 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
         ),
     ),
     CrispSensorEntityDescription(
-        key=SENSOR_NEXT_ORDER_DELIVERY_START_TIME,
-        name="Next order delivery start time",
-        icon="mdi:clock-start",
-        get_value=lambda data: (
-            None
-            if data["next_order"] is None
-            else data["next_order"].get("delivery_start_time")
-        ),
-    ),
-    CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_END,
         name="Next order delivery end",
         icon="mdi:clock-end",
+        device_class=SensorDeviceClass.TIMESTAMP,
         get_value=lambda data: (
             None
             if data["next_order"] is None
             else data["next_order"].get("delivery_end")
         ),
     ),
-    CrispSensorEntityDescription(
-        key=SENSOR_NEXT_ORDER_DELIVERY_END_TIME,
-        name="Next order delivery end time",
-        icon="mdi:clock-end",
-        get_value=lambda data: (
-            None
-            if data["next_order"] is None
-            else data["next_order"].get("delivery_end_time")
-        ),
-    ),
 )
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: CrispConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
@@ -143,6 +128,6 @@ class CrispSensor(CrispEntity, SensorEntity):
         self.entity_description = entity_description
 
     @property
-    def native_value(self) -> StateType | date | time:
+    def native_value(self) -> StateType | date | datetime:
         """Return the value reported by the sensor."""
         return self.entity_description.get_value(self.coordinator.data)
