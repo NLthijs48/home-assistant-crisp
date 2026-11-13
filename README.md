@@ -29,9 +29,7 @@ Name | Type | Description
 -- | -- | --
 `Next order delivery on` | date | Delivery date
 `Next order delivery start` | datetime | Start of the delivery window (as selected by the user)
-`Next order delivery start time` | time | Start time of the delivery window (as selected by the user)
 `Next order delivery end` | datetime | End of the delivery window (as selected by the user)
-`Next order delivery end time` | time | End time of the delivery window (as selected by the user)
 `Next order product count` | int | Number of order lines (count of different products, not a sum of counts)
 
 ## Installation from the Marketplace
