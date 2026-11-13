@@ -36,7 +36,7 @@ Name | Type | Description
 
 ## Installation from the Marketplace
 
-[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=NLthijs48&repository=NLthijs48&category=integration)
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=NLthijs48&repository=home-assistant-crisp&category=integration)
 
 ## Installation as a custom repository
 1. Go the the Marketplace in Home Assistant [![Open your Home Assistant instance and show the custom repositories you added to the Marketplace.](https://my.home-assistant.io/badges/marketplace_repositories.svg)](https://my.home-assistant.io/redirect/marketplace_repositories/)
