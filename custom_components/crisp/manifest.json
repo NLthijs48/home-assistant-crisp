@@ -2,14 +2,12 @@
   "domain": "crisp",
   "name": "Crisp",
   "categories": ["productivity_information.shopping_groceries"],
-  "codeowners": [
-    "@NLthijs48"
-  ],
+  "codeowners": ["@NLthijs48"],
   "config_flow": true,
+  "connectivity": ["cloud"],
   "documentation": "https://github.com/NLthijs48/home-assistant-crisp",
   "integration_type": "service",
   "iot_class": "cloud_polling",
-  "connectivity": ["cloud"],
   "issue_tracker": "https://github.com/NLthijs48/home-assistant-crisp/issues",
   "version": "1.2.0"
 }
