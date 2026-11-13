@@ -5,18 +5,16 @@ __pycache__
 */build/*
 */dist/*
 
-
 # misc
 .coverage
 .vscode
 coverage.xml
-
+.junie
 
 # Home Assistant configuration
 config/*
 !config/configuration.yaml
 
-
-# Intellij con
+# Intellij configuration
 .idea
 !.idea/vcs.xml
