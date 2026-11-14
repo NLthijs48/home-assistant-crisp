@@ -55,6 +55,16 @@ Name | Type | Description
 
 Copy all files from `custom_component/crisp/` to your HA installation, restart HA, configure the integration
 
+## Removing the integration
+
+1. Go to **Settings** > **Devices & services** and select the Crisp integration
+2. Click the three dots next to the Crisp account and choose **Delete**
+3. If installed through the Marketplace, optionally remove the repository there; if installed manually, delete `custom_components/crisp/` and restart HA
+
+## Quality scale
+
+Progress on the Home Assistant integration quality scale is tracked in [quality_scale.yaml](custom_components/crisp/quality_scale.yaml).
+
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)

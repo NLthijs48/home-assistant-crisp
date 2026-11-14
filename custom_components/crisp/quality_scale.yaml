@@ -1,0 +1,53 @@
+rules:
+  # Bronze
+  action-setup:
+    status: exempt
+    comment: The integration does not provide any actions.
+  appropriate-polling:
+    status: done
+    comment: The coordinator polls the Crisp cloud API every 15 minutes.
+  brands:
+    status: done
+    comment: Brand images are provided in the `brand` folder.
+  common-modules:
+    status: done
+    comment: Shared logic lives in `coordinator.py` and `entity.py`.
+  config-flow-test-coverage:
+    status: todo
+    comment: The repository has no tests yet.
+  config-flow:
+    status: done
+    comment: Config flow with email/login code and reauthentication.
+  dependency-transparency:
+    status: exempt
+    comment: No external libraries are used; the API is accessed through Home Assistant's aiohttp session.
+  docs-actions:
+    status: exempt
+    comment: The integration does not provide any actions.
+  docs-high-level-description:
+    status: done
+  docs-installation-instructions:
+    status: done
+  docs-removal-instructions:
+    status: done
+  entity-event-setup:
+    status: exempt
+    comment: Entities are coordinator-based and do not subscribe to events.
+  entity-unique-id:
+    status: done
+    comment: Unique ID is `<account id>.<entity key>`.
+  has-entity-name:
+    status: done
+    comment: Base entity sets `_attr_has_entity_name = True`.
+  runtime-data:
+    status: done
+    comment: The coordinator is stored in `entry.runtime_data`.
+  test-before-configure:
+    status: done
+    comment: The login is verified against the Crisp API during the config flow.
+  test-before-setup:
+    status: done
+    comment: Setup performs `async_config_entry_first_refresh`.
+  unique-config-entry:
+    status: done
+    comment: The unique ID is the Crisp user id; duplicates are aborted.
