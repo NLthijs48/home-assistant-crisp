@@ -20,7 +20,10 @@ from .const import (
     SENSOR_NEXT_ORDER_DELIVERY_END,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
+    SENSOR_NEXT_ORDER_MEALKIT_COUNT,
     SENSOR_NEXT_ORDER_PRODUCT_COUNT,
+    SENSOR_NEXT_ORDER_RECIPE_COUNT,
+    SENSOR_NEXT_ORDER_USER_RECIPE_COUNT,
     SENSOR_ORDER_COUNT_OPEN,
     SENSOR_ORDER_COUNT_TOTAL,
 )
@@ -56,6 +59,36 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
             None
             if data["next_order"] is None
             else data["next_order"].get("product_count")
+        ),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_RECIPE_COUNT,
+        name="Next order recipe count",
+        icon="mdi:chef-hat",
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("recipe_count")
+        ),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_USER_RECIPE_COUNT,
+        name="Next order user recipe count",
+        icon="mdi:chef-hat",
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("user_recipe_count")
+        ),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_MEALKIT_COUNT,
+        name="Next order mealkit count",
+        icon="mdi:food-variant",
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("mealkit_count")
         ),
     ),
     CrispSensorEntityDescription(

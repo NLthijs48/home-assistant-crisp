@@ -35,6 +35,9 @@ class CrispUpcomingOrderData(TypedDict):
 
     id: int
     product_count: int
+    recipe_count: int
+    user_recipe_count: int
+    mealkit_count: int
     # None for the case it cannot get parsed
     delivery_on: date | None
     # None for the case it cannot get parsed
@@ -80,6 +83,12 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
 
                 product_count = len(next_open_order_data.get("products"))
 
+                recipe_count = len(next_open_order_data.get("recipes") or [])
+                user_recipe_count = len(next_open_order_data.get("userRecipes") or [])
+
+                mealkit = next_open_order_data.get("mealkit") or {}
+                mealkit_count = len(mealkit.get("items") or [])
+
                 delivery_slot = next_open_order_data.get("deliverySlot", {})
 
                 delivery_on_raw = delivery_slot.get("date")
@@ -107,6 +116,9 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                 next_order = {
                     "id": next_order_id,
                     "product_count": product_count,
+                    "recipe_count": recipe_count,
+                    "user_recipe_count": user_recipe_count,
+                    "mealkit_count": mealkit_count,
                     "delivery_on": delivery_on,
                     "delivery_start": delivery_start,
                     "delivery_end": delivery_end,

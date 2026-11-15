@@ -31,6 +31,9 @@ Name | Type | Description
 `Next order delivery start` | datetime | Start of the delivery window (as selected by the user)
 `Next order delivery end` | datetime | End of the delivery window (as selected by the user)
 `Next order product count` | int | Number of order lines (count of different products, not a sum of counts)
+`Next order recipe count` | int | Number of recipes in the order (created by Crisp, possibly customized by the user)
+`Next order user recipe count` | int | Number of user-defined recipes in the order
+`Next order mealkit count` | int | Number of mealkits in the order (0 if the order has no mealkit)
 
 ## Installation from the Marketplace
 
