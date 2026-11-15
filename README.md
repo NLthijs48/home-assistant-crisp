@@ -63,7 +63,7 @@ Copy all files from `custom_component/crisp/` to your HA installation, restart H
 
 ## Quality scale
 
-Progress on the Home Assistant integration quality scale is tracked in [quality_scale.yaml](custom_components/crisp/quality_scale.yaml).
+This integration targets the **Bronze** level of the Home Assistant integration quality scale. The status of each rule is tracked in [quality_scale.yaml](custom_components/crisp/quality_scale.yaml).
 
 ## Contributions are welcome!
 
