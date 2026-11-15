@@ -30,7 +30,10 @@
         "error": {
             "auth": "Email is wrong.",
             "connection": "Unable to connect to the server.",
-            "unknown": "Unknown error occurred."
+            "unknown": "Unknown error occurred.",
+            "invalid_email": "This email could not be used to request a login code: {error}",
+            "invalid_code": "The login code was rejected: {error}",
+            "login_failed": "Could not log in, please try again."
         }
     }
 }

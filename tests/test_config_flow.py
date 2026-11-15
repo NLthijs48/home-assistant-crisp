@@ -175,7 +175,8 @@ async def test_user_step_error_in_response(
         result["flow_id"], dict(USER_INPUT)
     )
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] == {CONF_EMAIL: "unknown_email"}
+    assert result["errors"] == {CONF_EMAIL: "invalid_email"}
+    assert result["description_placeholders"] == {"error": "unknown_email"}
 
     mock_request_login_code.return_value = {}
     result = await hass.config_entries.flow.async_configure(
@@ -217,8 +218,8 @@ async def test_login_step_exceptions(
 @pytest.mark.parametrize(
     ("response", "errors"),
     [
-        ({"error": "bad_code"}, {CONF_CODE: "Could not login: bad_code"}),
-        ({}, {"base": "Unknown error, could not login"}),
+        ({"error": "bad_code"}, {CONF_CODE: "invalid_code"}),
+        ({}, {"base": "login_failed"}),
     ],
 )
 async def test_login_step_bad_response(
@@ -237,6 +238,8 @@ async def test_login_step_bad_response(
     )
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == errors
+    if "error" in response:
+        assert result["description_placeholders"] == {"error": response["error"]}
 
     mock_login.return_value = {"id": USER_ID}
     result = await hass.config_entries.flow.async_configure(

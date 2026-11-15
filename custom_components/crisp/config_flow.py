@@ -33,6 +33,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.FlowResult:
         """Handle a flow initialized by the user: enter email of Crisp user."""
         errors: dict[str, str] = {}
+        placeholders: dict[str, str] = {}
         if user_input is not None:
             try:
                 # Generate client_id
@@ -63,7 +64,9 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 # Error from the api, email not found or something like that
                 if "error" in response:
-                    errors["email"] = response["error"]
+                    LOGGER.warning("request_login_code error: %s", response["error"])
+                    errors[CONF_EMAIL] = "invalid_email"
+                    placeholders["error"] = str(response["error"])
                 else:
                     # Save the email/client_id
                     self.user_info = user_input
@@ -108,6 +111,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+            description_placeholders=placeholders,
             last_step=False,
         )
 
@@ -180,6 +184,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.ConfigFlowResult:
         """Second step of the setup; enter login code for the Crisp user."""
         errors: dict[str, str] = {}
+        placeholders: dict[str, str] = {}
         if user_input is not None:
             try:
                 # Try to login using the provided code
@@ -200,12 +205,12 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
             else:
                 if "error" in response:
-                    # These errors are not super human-readable, could attempt to
-                    # map some of them to better text
-                    errors[CONF_CODE] = "Could not login: " + response["error"]
+                    LOGGER.warning("login error: %s", response["error"])
+                    errors[CONF_CODE] = "invalid_code"
+                    placeholders["error"] = str(response["error"])
                 elif "id" not in response:
                     # Did not get a user id back as confirmation, something went wrong
-                    errors["base"] = "Unknown error, could not login"
+                    errors["base"] = "login_failed"
                 else:
                     return await self.async_save_user_id(response["id"])
 
@@ -224,6 +229,7 @@ class CrispConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+            description_placeholders=placeholders,
         )
 
     async def async_save_user_id(
