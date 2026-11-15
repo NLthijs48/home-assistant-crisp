@@ -56,6 +56,17 @@ Home Assistant instance running and already configured with the included
 [`configuration.yaml`](./config/configuration.yaml)
 file.
 
+## Run the tests
+
+Install the test requirements and run pytest from the repository root:
+
+```bash
+python3 -m pip install --requirement requirements_test.txt
+python3 -m pytest
+```
+
+The tests do not need network access; the Crisp API client is mocked.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under its MIT License.

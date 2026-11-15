@@ -13,8 +13,8 @@ rules:
     status: done
     comment: Shared logic lives in `coordinator.py` and `entity.py`.
   config-flow-test-coverage:
-    status: todo
-    comment: The repository has no tests yet.
+    status: done
+    comment: The config flow, including reauthentication, is fully covered by tests in `tests/test_config_flow.py`.
   config-flow:
     status: done
     comment: Config flow with email/login code and reauthentication.
