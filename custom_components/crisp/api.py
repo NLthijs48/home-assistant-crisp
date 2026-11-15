@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import random
 import socket
 from enum import StrEnum
 
 import aiohttp
-import async_timeout
 
 DEFAULT_ORIGIN = "https://crispapp.nl"
 """Default origin as used by the Crisp app api"""
@@ -129,7 +129,7 @@ class CrispApiClient:
     ) -> any:
         """Get information from the API."""
         try:
-            async with async_timeout.timeout(10):
+            async with asyncio.timeout(10):
                 response = await self._session.request(
                     method=method,
                     url=f"{self._origin}/v1{path}",
