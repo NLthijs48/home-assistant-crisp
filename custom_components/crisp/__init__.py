@@ -14,7 +14,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import CrispApiClient
-from .const import DOMAIN
+from .const import DEVICE_NEXT_ORDER, DOMAIN
 from .coordinator import CrispDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [
@@ -47,14 +47,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: CrispConfigEntry) -> boo
 
 def _remove_stale_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """
-    Remove devices of this entry that don't match the current identifier.
+    Remove devices of this entry that don't match a current identifier.
 
     Older versions registered the device with identifier (DOMAIN, None).
     """
     registry = dr.async_get(hass)
-    current = (DOMAIN, entry.unique_id)
+    unique_id = entry.unique_id or entry.entry_id
+    current = {
+        (DOMAIN, unique_id),
+        (DOMAIN, f"{unique_id}_{DEVICE_NEXT_ORDER}"),
+    }
     for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
-        if current not in device.identifiers:
+        if not current & device.identifiers:
             registry.async_remove_device(device.id)
 
 

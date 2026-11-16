@@ -8,6 +8,11 @@ NAME = "Crisp"
 DOMAIN = "crisp"
 ATTRIBUTION = "Data provided by Crisp"
 
+# Sub devices
+DEVICE_NEXT_ORDER = "next_order"
+DEVICE_NEXT_ORDER_NAME = "Next order"
+DEVICE_ACCOUNT_NAME = "Account"
+
 # Sensor entity id keys
 SENSOR_ORDER_COUNT_TOTAL = "order_count_total"
 SENSOR_ORDER_COUNT_OPEN = "order_count_open"

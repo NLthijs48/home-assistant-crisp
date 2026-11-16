@@ -12,7 +12,7 @@ _Integration to integrate with [Crisp][crisp]._
 
 An instance of this integration provides information about a single Crisp account into Home Assistant.
 The integration can be set up multiple times if you want to track multiple accounts.
-An account is represented as a device.
+An account is represented as a device. The next order is represented as a separate "Next order" device linked to the account device.
 
 ## Account sensors
 
@@ -21,19 +21,19 @@ Name | Type | Description
 `Order count total` | int | Total number of orders in your Crisp account (includes completed, cancelled and pending orders).
 `Order count open` | int | Count of open orders in your Crisp account (out for delivery, or planned in the future).
 
-## Next order sensors
+## Next order sensors (device "Next order")
 
 If there are orders planned for delivery, the following sensors are available for the order that is closest to delivery.
 
 Name | Type | Description
 -- | -- | --
-`Next order delivery on` | date | Delivery date
-`Next order delivery start` | datetime | Start of the delivery window (as selected by the user)
-`Next order delivery end` | datetime | End of the delivery window (as selected by the user)
-`Next order product count` | int | Number of order lines (count of different products, not a sum of counts)
-`Next order recipe count` | int | Number of recipes in the order (created by Crisp, possibly customized by the user)
-`Next order user recipe count` | int | Number of user-defined recipes in the order
-`Next order mealkit count` | int | Number of mealkits in the order (0 if the order has no mealkit)
+`Delivery on` | date | Delivery date
+`Delivery start` | datetime | Start of the delivery window (as selected by the user)
+`Delivery end` | datetime | End of the delivery window (as selected by the user)
+`Product count` | int | Number of order lines (count of different products, not a sum of counts)
+`Recipe count` | int | Number of recipes in the order (created by Crisp, possibly customized by the user)
+`User recipe count` | int | Number of user-defined recipes in the order
+`Mealkit count` | int | Number of mealkits in the order (0 if the order has no mealkit)
 
 ## Installation from the Marketplace
 

@@ -17,6 +17,7 @@ from homeassistant.helpers.typing import StateType
 
 from . import CrispConfigEntry
 from .const import (
+    DEVICE_NEXT_ORDER,
     SENSOR_NEXT_ORDER_DELIVERY_END,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
@@ -28,7 +29,7 @@ from .const import (
     SENSOR_ORDER_COUNT_TOTAL,
 )
 from .coordinator import CrispData, CrispDataUpdateCoordinator
-from .entity import CrispEntity
+from .entity import CrispEntity, async_register_devices
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -36,6 +37,7 @@ class CrispSensorEntityDescription(SensorEntityDescription):
     """Describes Crisp sensor entity."""
 
     get_value: Callable[[CrispData], StateType | date | datetime]
+    next_order: bool = False
 
 
 SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
@@ -53,7 +55,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_PRODUCT_COUNT,
-        name="Next order product count",
+        name="Product count",
+        next_order=True,
         icon="mdi:food-croissant",
         get_value=lambda data: (
             None
@@ -63,7 +66,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_RECIPE_COUNT,
-        name="Next order recipe count",
+        name="Recipe count",
+        next_order=True,
         icon="mdi:chef-hat",
         get_value=lambda data: (
             None
@@ -73,7 +77,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_USER_RECIPE_COUNT,
-        name="Next order user recipe count",
+        name="User recipe count",
+        next_order=True,
         icon="mdi:chef-hat",
         get_value=lambda data: (
             None
@@ -83,7 +88,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_MEALKIT_COUNT,
-        name="Next order mealkit count",
+        name="Mealkit count",
+        next_order=True,
         icon="mdi:food-variant",
         get_value=lambda data: (
             None
@@ -93,7 +99,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_ON,
-        name="Next order delivery on",
+        name="Delivery on",
+        next_order=True,
         icon="mdi:calendar",
         device_class=SensorDeviceClass.DATE,
         get_value=lambda data: (
@@ -104,7 +111,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_START,
-        name="Next order delivery start",
+        name="Delivery start",
+        next_order=True,
         icon="mdi:clock-start",
         device_class=SensorDeviceClass.TIMESTAMP,
         get_value=lambda data: (
@@ -115,7 +123,8 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
     ),
     CrispSensorEntityDescription(
         key=SENSOR_NEXT_ORDER_DELIVERY_END,
-        name="Next order delivery end",
+        name="Delivery end",
+        next_order=True,
         icon="mdi:clock-end",
         device_class=SensorDeviceClass.TIMESTAMP,
         get_value=lambda data: (
@@ -128,12 +137,13 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     entry: CrispConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
     coordinator = entry.runtime_data
+    async_register_devices(hass, entry)
     async_add_devices(
         [
             CrispSensor(
@@ -154,7 +164,10 @@ class CrispSensor(CrispEntity, SensorEntity):
         entity_description: CrispSensorEntityDescription,
     ) -> None:
         """Initialize the sensor class."""
-        super().__init__(coordinator)
+        super().__init__(
+            coordinator,
+            sub_device=DEVICE_NEXT_ORDER if entity_description.next_order else None,
+        )
         self._attr_unique_id = (
             f"{coordinator.config_entry.unique_id}.{entity_description.key}"
         )
