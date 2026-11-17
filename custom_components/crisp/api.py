@@ -12,6 +12,9 @@ import aiohttp
 DEFAULT_ORIGIN = "https://crispapp.nl"
 """Default origin as used by the Crisp app api"""
 
+TRACK_TRACE_STATUS_URL = "https://crisp.nl/trackTrace/api/status"
+"""Track & trace status endpoint, authorized with the delivery link token"""
+
 
 class CrispApiClientError(Exception):
     """Exception to indicate a general API error."""
@@ -120,6 +123,33 @@ class CrispApiClient:
     async def get_order_details(self, order_id: int) -> any:
         """Get the detail of a particular order."""
         return await self._api_wrapper(method="get", path=f"/order/{order_id}")
+
+    async def get_track_trace_status(self, token: str) -> any:
+        """Get the track & trace status for a delivery link token."""
+        try:
+            async with asyncio.timeout(10):
+                response = await self._session.request(
+                    method="get",
+                    url=TRACK_TRACE_STATUS_URL,
+                    headers={
+                        "Authorization": f"bearer {token}",
+                        "User-Agent": self._headers["User-Agent"],
+                    },
+                )
+                if response.status in (401, 403):
+                    raise CrispApiClientAuthenticationError("Invalid credentials")
+                response.raise_for_status()
+                return await response.json()
+        except CrispApiClientError:
+            raise
+        except TimeoutError as exception:
+            raise CrispApiClientCommunicationError(
+                "Timeout error fetching information",
+            ) from exception
+        except (aiohttp.ClientError, socket.gaierror) as exception:
+            raise CrispApiClientCommunicationError(
+                "Error fetching information",
+            ) from exception
 
     async def _api_wrapper(
         self,

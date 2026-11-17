@@ -23,3 +23,7 @@ SENSOR_NEXT_ORDER_MEALKIT_COUNT = "next_order_mealkit_count"
 SENSOR_NEXT_ORDER_DELIVERY_ON = "next_order_delivery_on"
 SENSOR_NEXT_ORDER_DELIVERY_START = "next_order_delivery_start"
 SENSOR_NEXT_ORDER_DELIVERY_END = "next_order_delivery_end"
+SENSOR_NEXT_ORDER_DELIVERY_EXPECTED = "next_order_delivery_expected"
+
+# Device tracker entity id keys
+TRACKER_NEXT_ORDER_DRIVER = "next_order_driver"

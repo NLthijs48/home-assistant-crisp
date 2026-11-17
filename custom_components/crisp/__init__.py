@@ -18,6 +18,7 @@ from .const import DEVICE_NEXT_ORDER, DOMAIN
 from .coordinator import CrispDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [
+    Platform.DEVICE_TRACKER,
     Platform.SENSOR,
 ]
 

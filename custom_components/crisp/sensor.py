@@ -19,6 +19,7 @@ from . import CrispConfigEntry
 from .const import (
     DEVICE_NEXT_ORDER,
     SENSOR_NEXT_ORDER_DELIVERY_END,
+    SENSOR_NEXT_ORDER_DELIVERY_EXPECTED,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
     SENSOR_NEXT_ORDER_MEALKIT_COUNT,
@@ -38,6 +39,8 @@ class CrispSensorEntityDescription(SensorEntityDescription):
 
     get_value: Callable[[CrispData], StateType | date | datetime]
     next_order: bool = False
+    # Unavailable (instead of unknown) while there is no value, e.g. no tracking
+    unavailable_without_value: bool = False
 
 
 SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
@@ -133,6 +136,19 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
             else data["next_order"].get("delivery_end")
         ),
     ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DELIVERY_EXPECTED,
+        name="Delivery expected",
+        next_order=True,
+        unavailable_without_value=True,
+        icon="mdi:truck-fast",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("delivery_expected")
+        ),
+    ),
 )
 
 
@@ -172,6 +188,20 @@ class CrispSensor(CrispEntity, SensorEntity):
             f"{coordinator.config_entry.unique_id}.{entity_description.key}"
         )
         self.entity_description = entity_description
+
+    @property
+    def available(self) -> bool:
+        """Next order sensors are unavailable without an open order."""
+        if not super().available:
+            return False
+        if (
+            self.entity_description.next_order
+            and (self.coordinator.data or {}).get("next_order") is None
+        ):
+            return False
+        if self.entity_description.unavailable_without_value:
+            return self.native_value is not None
+        return True
 
     @property
     def native_value(self) -> StateType | date | datetime:
