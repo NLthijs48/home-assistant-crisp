@@ -10,5 +10,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/NLthijs48/home-assistant-crisp/issues",
   "quality_scale": "bronze",
-  "version": "1.5.0"
+  "version": "1.6.0-dev"
 }
