@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
-from typing import TypedDict
+from typing import Any, TypedDict
+from zoneinfo import ZoneInfo
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -44,6 +45,27 @@ class CrispUpcomingOrderData(TypedDict):
     delivery_start: datetime | None
     # None for the case it cannot get parsed
     delivery_end: datetime | None
+    # None when no driver position is available
+    driver_latitude: float | None
+    driver_longitude: float | None
+    # None when no track & trace data is available or it cannot get parsed
+    estimated_arrival: datetime | None
+
+
+DEFAULT_UPDATE_INTERVAL = timedelta(minutes=15)
+TRACK_TRACE_TIMEZONE = ZoneInfo("Europe/Amsterdam")
+
+
+def _interval_for_arrival(estimated_arrival: datetime | None) -> timedelta:
+    """Determine the polling interval based on the expected arrival."""
+    if estimated_arrival is None:
+        return DEFAULT_UPDATE_INTERVAL
+    remaining = estimated_arrival - dt_util.utcnow()
+    if remaining > timedelta(hours=1):
+        return DEFAULT_UPDATE_INTERVAL
+    if remaining > timedelta(minutes=15):
+        return timedelta(minutes=5)
+    return timedelta(minutes=1)
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
@@ -63,7 +85,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             hass=hass,
             logger=LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(minutes=15),
+            update_interval=DEFAULT_UPDATE_INTERVAL,
         )
 
     async def _async_update_data(self) -> CrispData:
@@ -80,6 +102,35 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                 next_order_id = open_order_ids[0]
                 next_open_order = await self.client.get_order_details(next_order_id)
                 next_open_order_data = next_open_order.get("data", {})
+
+                driver_latitude: float | None = None
+                driver_longitude: float | None = None
+                estimated_arrival: datetime | None = None
+                delivery_link = next_open_order_data.get("deliveryLink")
+                if delivery_link:
+                    status = await self._get_status(delivery_link)
+                    if status is not None and status.get("type") != "delivery":
+                        # Delivery finished or changed: reload the order, the
+                        # delivery link should be gone now
+                        next_open_order = await self.client.get_order_details(
+                            next_order_id
+                        )
+                        next_open_order_data = next_open_order.get("data", {})
+                        status = None
+                        delivery_link = next_open_order_data.get("deliveryLink")
+                        if delivery_link:
+                            status = await self._get_status(delivery_link)
+                    if status is not None:
+                        try:
+                            van = status.get("van")
+                            if van:
+                                driver_latitude = float(van["latitude"])
+                                driver_longitude = float(van["longitude"])
+                        except (KeyError, TypeError, ValueError):
+                            LOGGER.debug("Could not parse van position")
+                        estimated_arrival = self._parse_arrival(
+                            status.get("estimatedArrivalAt")
+                        )
 
                 product_count = len(next_open_order_data.get("products"))
 
@@ -122,7 +173,13 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
                     "delivery_on": delivery_on,
                     "delivery_start": delivery_start,
                     "delivery_end": delivery_end,
+                    "driver_latitude": driver_latitude,
+                    "driver_longitude": driver_longitude,
+                    "estimated_arrival": estimated_arrival,
                 }
+                self.update_interval = _interval_for_arrival(estimated_arrival)
+            else:
+                self.update_interval = DEFAULT_UPDATE_INTERVAL
 
             result: CrispData = {
                 "order_count_total": order_count_total,
@@ -136,3 +193,28 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             raise ConfigEntryAuthFailed(exception) from exception
         except CrispApiClientError as exception:
             raise UpdateFailed(exception) from exception
+
+    async def _get_status(self, delivery_link: str) -> dict[str, Any] | None:
+        """Fetch track & trace status, None when unavailable."""
+        token = delivery_link.rstrip("/").rsplit("/", 1)[-1]
+        try:
+            status = await self.client.get_track_trace_status(token)
+        except CrispApiClientAuthenticationError:
+            LOGGER.debug("Track & trace token rejected")
+            return None
+        except CrispApiClientError:
+            LOGGER.debug("Could not fetch track & trace status")
+            return None
+        return status if isinstance(status, dict) else None
+
+    @staticmethod
+    def _parse_arrival(raw: str | None) -> datetime | None:
+        """Parse a Dutch local time string like '2026-11-16 16:37:30'."""
+        if not raw:
+            return None
+        parsed = dt_util.parse_datetime(raw)
+        if parsed is None:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=TRACK_TRACE_TIMEZONE)
+        return dt_util.as_local(parsed)

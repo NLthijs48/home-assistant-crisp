@@ -21,6 +21,7 @@ from .const import (
     SENSOR_NEXT_ORDER_DELIVERY_END,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
+    SENSOR_NEXT_ORDER_EXPECTED_DELIVERY,
     SENSOR_NEXT_ORDER_MEALKIT_COUNT,
     SENSOR_NEXT_ORDER_PRODUCT_COUNT,
     SENSOR_NEXT_ORDER_RECIPE_COUNT,
@@ -133,6 +134,18 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
             else data["next_order"].get("delivery_end")
         ),
     ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_EXPECTED_DELIVERY,
+        name="Expected delivery time",
+        next_order=True,
+        icon="mdi:truck-fast",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("estimated_arrival")
+        ),
+    ),
 )
 
 
@@ -172,6 +185,15 @@ class CrispSensor(CrispEntity, SensorEntity):
             f"{coordinator.config_entry.unique_id}.{entity_description.key}"
         )
         self.entity_description = entity_description
+
+    @property
+    def available(self) -> bool:
+        """Next order sensors are unavailable without an open order."""
+        if not super().available:
+            return False
+        if self.entity_description.next_order:
+            return (self.coordinator.data or {}).get("next_order") is not None
+        return True
 
     @property
     def native_value(self) -> StateType | date | datetime:
