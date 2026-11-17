@@ -78,6 +78,10 @@ All product names, trademarks and registered trademarks in the images in this
 repository, are property of their respective owners. All images in this
 repository are used for identification purposes only.
 
+## Integration blueprint
+
+Thanks to ludeeus for the [integration blueprint](https://github.com/ludeeus/integration_blueprint) used as a starting point for this integration.
+
 ***
 
 [crisp]: https://crisp.nl
