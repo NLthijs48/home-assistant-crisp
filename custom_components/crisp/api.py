@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-import random
+import secrets
 import socket
 from enum import StrEnum
 
@@ -66,7 +66,7 @@ class CrispApiClient:
         character_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         client_id = ""
         while len(client_id) < 20:
-            client_id += character_set[random.randrange(0, len(character_set))]
+            client_id += secrets.choice(character_set)
         return client_id
 
     def __init__(
