@@ -22,6 +22,7 @@ from .const import (
     SENSOR_NEXT_ORDER_DELIVERY_EXPECTED,
     SENSOR_NEXT_ORDER_DELIVERY_ON,
     SENSOR_NEXT_ORDER_DELIVERY_START,
+    SENSOR_NEXT_ORDER_DRIVER_NAME,
     SENSOR_NEXT_ORDER_MEALKIT_COUNT,
     SENSOR_NEXT_ORDER_PRODUCT_COUNT,
     SENSOR_NEXT_ORDER_RECIPE_COUNT,
@@ -147,6 +148,18 @@ SENSOR_TYPES: tuple[CrispSensorEntityDescription, ...] = (
             None
             if data["next_order"] is None
             else data["next_order"].get("delivery_expected")
+        ),
+    ),
+    CrispSensorEntityDescription(
+        key=SENSOR_NEXT_ORDER_DRIVER_NAME,
+        name="Driver name",
+        next_order=True,
+        unavailable_without_value=True,
+        icon="mdi:account-hard-hat",
+        get_value=lambda data: (
+            None
+            if data["next_order"] is None
+            else data["next_order"].get("driver_name")
         ),
     ),
 )

@@ -29,11 +29,14 @@ Name | Type | Description
 -- | -- | --
 `Delivery on` | date | Delivery date
 `Delivery start` | datetime | Start of the delivery window (as selected by the user)
+`Delivery expected` | datetime | Expected delivery time from track & trace (unavailable until a tracking link with an estimate is available)
 `Delivery end` | datetime | End of the delivery window (as selected by the user)
 `Product count` | int | Number of order lines (count of different products, not a sum of counts)
 `Recipe count` | int | Number of recipes in the order (created by Crisp, possibly customized by the user)
 `User recipe count` | int | Number of user-defined recipes in the order
 `Mealkit count` | int | Number of mealkits in the order (0 if the order has no mealkit)
+`Driver name` | string | First name of the driver (unavailable until the driver is known)
+`Driver` | device tracker | Position of the delivery van (unavailable until the driver is on the way)
 
 ## Installation from the Marketplace
 

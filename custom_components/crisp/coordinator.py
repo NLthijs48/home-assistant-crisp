@@ -50,6 +50,8 @@ class CrispUpcomingOrderData(TypedDict):
     driver_longitude: float | None
     # None when no track & trace data is available or it cannot get parsed
     delivery_expected: datetime | None
+    # None when neither track & trace nor order details contain a driver name
+    driver_name: str | None
 
 
 DEFAULT_UPDATE_INTERVAL = timedelta(minutes=15)
@@ -147,6 +149,12 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             status.get("estimatedArrivalAt") if status else None
         )
 
+        driver_name = (
+            (status.get("driverFirstname") if status else None)
+            or (order_data.get("deliveryTipInfo") or {}).get("name")
+            or None
+        )
+
         mealkit = order_data.get("mealkit") or {}
 
         return {
@@ -161,6 +169,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             "driver_latitude": driver_latitude,
             "driver_longitude": driver_longitude,
             "delivery_expected": delivery_expected,
+            "driver_name": driver_name,
         }
 
     async def _get_order_and_status(

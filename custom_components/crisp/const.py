@@ -24,6 +24,7 @@ SENSOR_NEXT_ORDER_DELIVERY_ON = "next_order_delivery_on"
 SENSOR_NEXT_ORDER_DELIVERY_START = "next_order_delivery_start"
 SENSOR_NEXT_ORDER_DELIVERY_END = "next_order_delivery_end"
 SENSOR_NEXT_ORDER_DELIVERY_EXPECTED = "next_order_delivery_expected"
+SENSOR_NEXT_ORDER_DRIVER_NAME = "next_order_driver_name"
 
 # Device tracker entity id keys
 TRACKER_NEXT_ORDER_DRIVER = "next_order_driver"
