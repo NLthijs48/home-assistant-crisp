@@ -36,6 +36,7 @@ Name | Type | Description
 `User recipe count` | int | Number of user-defined recipes in the order
 `Mealkit count` | int | Number of mealkits in the order (0 if the order has no mealkit)
 `Driver name` | string | First name of the driver (unavailable until the driver is known)
+`Contains alcohol` | boolean | Whether the order contains alcohol, affects if an unattended delivery is allowed (unavailable until track & trace data is available)
 `Driver` | device tracker | Position of the delivery van (unavailable until the driver is on the way)
 
 ## Installation from the Marketplace
@@ -90,7 +91,6 @@ Thanks to ludeeus for the [integration blueprint](https://github.com/ludeeus/int
 [crisp]: https://crisp.nl
 [commits-shield]: https://img.shields.io/github/commit-activity/y/NLthijs48/home-assistant-crisp.svg?style=for-the-badge
 [commits]: https://github.com/NLthijs48/home-assistant-crisp/commits/main
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/NLthijs48/home-assistant-crisp.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Thijs%20Wiefferink%20%40NLthijs48-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/NLthijs48/home-assistant-crisp.svg?style=for-the-badge

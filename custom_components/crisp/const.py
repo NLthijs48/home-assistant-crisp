@@ -26,5 +26,8 @@ SENSOR_NEXT_ORDER_DELIVERY_END = "next_order_delivery_end"
 SENSOR_NEXT_ORDER_DELIVERY_EXPECTED = "next_order_delivery_expected"
 SENSOR_NEXT_ORDER_DRIVER_NAME = "next_order_driver_name"
 
+# Binary sensor entity id keys
+BINARY_SENSOR_NEXT_ORDER_CONTAINS_ALCOHOL = "next_order_contains_alcohol"
+
 # Device tracker entity id keys
 TRACKER_NEXT_ORDER_DRIVER = "next_order_driver"

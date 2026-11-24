@@ -52,6 +52,8 @@ class CrispUpcomingOrderData(TypedDict):
     delivery_expected: datetime | None
     # None when neither track & trace nor order details contain a driver name
     driver_name: str | None
+    # None when no track & trace data is available
+    contains_alcohol: bool | None
 
 
 DEFAULT_UPDATE_INTERVAL = timedelta(minutes=15)
@@ -155,6 +157,11 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             or None
         )
 
+        contains_alcohol_raw = status.get("hasAlcohol") if status else None
+        contains_alcohol = (
+            contains_alcohol_raw if isinstance(contains_alcohol_raw, bool) else None
+        )
+
         mealkit = order_data.get("mealkit") or {}
 
         return {
@@ -170,6 +177,7 @@ class CrispDataUpdateCoordinator(DataUpdateCoordinator[CrispData]):
             "driver_longitude": driver_longitude,
             "delivery_expected": delivery_expected,
             "driver_name": driver_name,
+            "contains_alcohol": contains_alcohol,
         }
 
     async def _get_order_and_status(
