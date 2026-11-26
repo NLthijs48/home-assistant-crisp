@@ -11,6 +11,9 @@ from .const import DEVICE_NEXT_ORDER, TRACKER_NEXT_ORDER_DRIVER
 from .coordinator import CrispDataUpdateCoordinator, CrispUpcomingOrderData
 from .entity import CrispEntity, async_register_devices
 
+# Coordinator is used to centralize the data updates
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     hass: HomeAssistant,

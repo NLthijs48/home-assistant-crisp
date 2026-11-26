@@ -75,8 +75,8 @@ rules:
     status: done
     comment: The coordinator reports update failures through UpdateFailed, which Home Assistant logs and reports when the integration is unavailable.
   parallel-updates:
-    status: todo
-    comment: Add PARALLEL_UPDATES = 0 to sensor.py, binary_sensor.py, and device_tracker.py.
+    status: done
+    comment: All platforms set PARALLEL_UPDATES = 0 because updates are centralized in the coordinator.
   reauthentication-flow:
     status: done
     comment: The config flow supports reauthentication and raises ConfigEntryAuthFailed when credentials are invalid.

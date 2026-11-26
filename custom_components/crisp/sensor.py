@@ -33,6 +33,9 @@ from .const import (
 from .coordinator import CrispData, CrispDataUpdateCoordinator
 from .entity import CrispEntity, async_register_devices
 
+# Coordinator is used to centralize the data updates
+PARALLEL_UPDATES = 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class CrispSensorEntityDescription(SensorEntityDescription):
