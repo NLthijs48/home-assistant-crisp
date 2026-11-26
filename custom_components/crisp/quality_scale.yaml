@@ -51,3 +51,35 @@ rules:
   unique-config-entry:
     status: done
     comment: The unique ID is the Crisp user id; duplicates are aborted.
+
+  # Silver
+  action-exceptions:
+    status: exempt
+    comment: The integration does not provide any actions.
+  config-entry-unloading:
+    status: done
+    comment: async_unload_entry unloads the integration's platforms.
+  docs-configuration-parameters:
+    status: exempt
+    comment: The integration does not provide an options flow.
+  docs-installation-parameters:
+    status: done
+    comment: The README's setup instructions document the country, email, and login code required during setup.
+  entity-unavailable:
+    status: done
+    comment: Coordinator-based entities expose coordinator availability, and platforms combine it with super().available.
+  integration-owner:
+    status: done
+    comment: The integration has an owner listed in CODEOWNERS (@NLthijs48).
+  log-when-unavailable:
+    status: done
+    comment: The coordinator reports update failures through UpdateFailed, which Home Assistant logs and reports when the integration is unavailable.
+  parallel-updates:
+    status: todo
+    comment: Add PARALLEL_UPDATES = 0 to sensor.py, binary_sensor.py, and device_tracker.py.
+  reauthentication-flow:
+    status: done
+    comment: The config flow supports reauthentication and raises ConfigEntryAuthFailed when credentials are invalid.
+  test-coverage:
+    status: todo
+    comment: Add tests for __init__.py, coordinator.py, and the platform modules; achieve more than 95% test coverage.
